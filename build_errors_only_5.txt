@@ -1,0 +1,49 @@
+﻿
+[        ] Resolve mutations for 
+:gradle:checkKotlinGradlePluginCo
+nfigurationErrors 
+(Thread[#3691,Execution 
+worker,5,main]) started.
+[        ] :gradle:checkKotlinGra
+dlePluginConfigurationErrors 
+(Thread[#3691,Execution 
+worker,5,main]) started.
+[        ] > Task :gradle:checkKo
+tlinGradlePluginConfigurationErro
+rs SKIPPED
+[        ] Skipping task ':gradle
+:checkKotlinGradlePluginConfigura
+tionErrors' as task onlyIf 
+'errorDiagnostics are present' 
+is false.
+[   +1 ms] FAILURE: Build failed 
+with an exception.
+[        ] * Exception is:
+[        ] com.android.build.grad
+le.internal.dsl.AgpDslLockedExcep
+tion: It is too late to set 
+compileSdk
+[        ] 	at org.gradle.interna
+l.buildprocess.execution.SessionF
+ailureReportingActionExecutor.exe
+cute(SessionFailureReportingActio
+nExecutor.java:51)
+[        ] 	at org.gradle.interna
+l.buildprocess.execution.SessionF
+ailureReportingActionExecutor.exe
+cute(SessionFailureReportingActio
+nExecutor.java:39)
+[        ] 	at org.gradle.interna
+l.concurrent.ExecutorPolicy$Catch
+AndRecordFailures.onExecute(Execu
+torPolicy.java:64)
+[        ] BUILD FAILED in 1s
+[  +58 ms] Gradle task 
+assembleRelease failed with exit 
+code 1
+System.Management.Automation.Remo
+teException
+System.Management.Automation.Remo
+teException
+
+

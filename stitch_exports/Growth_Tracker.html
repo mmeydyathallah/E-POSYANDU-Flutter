@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#11d469",
+                        "background-light": "#EAF9E7",
+                        "background-dark": "#102218",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>E-Posyandu Growth Tracker</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen pb-24">
+<!-- Header Section -->
+<header class="sticky top-0 z-40 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 py-4">
+<div class="flex items-center justify-between max-w-lg mx-auto">
+<button class="p-2 hover:bg-primary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-200">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">Growth Tracker</h1>
+<button class="p-2 hover:bg-primary/10 rounded-full transition-colors relative">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-200">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-background-light"></span>
+</button>
+</div>
+</header>
+<main class="max-w-lg mx-auto px-4 space-y-6">
+<!-- Child Selector (Horizontal Scroll) -->
+<section class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+<div class="flex h-12 shrink-0 items-center gap-x-3 rounded-xl bg-white dark:bg-slate-800 border-2 border-primary px-4 shadow-sm">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl">child_care</span>
+</div>
+<div class="flex flex-col"><div class="flex items-center gap-1.5"><p class="text-sm font-bold leading-none">Aditya</p><span class="bg-blue-100 text-blue-600 text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Male</span></div><p class="text-[10px] text-slate-500">2y 3m</p></div>
+</div>
+<div class="flex h-12 shrink-0 items-center gap-x-3 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 px-4">
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500">
+<span class="material-symbols-outlined text-xl">child_care</span>
+</div>
+<div class="flex flex-col"><div class="flex items-center gap-1.5"><p class="text-sm font-medium leading-none">Siti</p><span class="bg-rose-100 text-rose-600 text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Female</span></div><p class="text-[10px] text-slate-500">4y 1m</p></div>
+</div>
+<button class="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-white/30 border-2 border-dashed border-slate-300 dark:border-slate-600 px-4">
+<span class="material-symbols-outlined text-slate-500">add</span>
+<p class="text-sm font-medium text-slate-600">Add Child</p>
+</button>
+</section>
+<!-- Current Stats -->
+<section class="grid grid-cols-2 gap-4">
+<div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-xl">monitor_weight</span>
+<p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Weight</p>
+</div>
+<p class="text-2xl font-bold leading-none">12.5 <span class="text-sm font-normal text-slate-400">kg</span></p>
+<div class="mt-3 flex items-center gap-1 text-xs font-bold text-primary">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+0.5kg from last month</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-xl">straighten</span>
+<p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Height</p>
+</div>
+<p class="text-2xl font-bold leading-none">88.4 <span class="text-sm font-normal text-slate-400">cm</span></p>
+<div class="mt-3 flex items-center gap-1 text-xs font-bold text-primary">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+1.2cm from last month</span>
+</div>
+</div>
+</section>
+<!-- KMS Chart Section -->
+<section class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h2 class="text-lg font-bold">KMS Growth Chart</h2>
+<p class="text-xs text-slate-500">Weight-for-Age (WHO Standard)</p>
+</div>
+<button class="text-primary text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">fullscreen</span>
+                    View Full
+                </button>
+</div><div class="flex p-1 bg-slate-100 dark:bg-slate-700/50 rounded-lg mb-6 w-full max-w-[240px] mx-auto">
+<button class="flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-md bg-blue-600 text-white shadow-sm transition-all text-xs font-bold">
+<span class="material-symbols-outlined text-sm">male</span>
+    Male
+  </button>
+<button class="flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-md text-slate-500 dark:text-slate-400 hover:text-rose-500 transition-all text-xs font-bold">
+<span class="material-symbols-outlined text-sm">female</span>
+    Female
+  </button>
+</div>
+<!-- Simplified High-Fidelity Chart Mockup -->
+<div class="relative h-64 w-full">
+<!-- Grid Lines & Zones -->
+<div class="absolute inset-0 flex flex-col justify-between"><div class="w-full h-1/4 bg-red-100/20 rounded-t-lg"></div>
+<div class="w-full h-1/4 bg-blue-50/40"></div>
+<div class="w-full h-1/4 bg-blue-100/50"></div>
+<div class="w-full h-1/4 bg-yellow-100/20 rounded-b-lg"></div></div>
+<!-- Chart SVG -->
+<svg class="absolute inset-0 w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 400 200">
+<!-- Average Reference Line -->
+<path d="M0,180 Q100,160 200,120 T400,60" fill="none" stroke="#cbd5e1" stroke-dasharray="4" stroke-width="2"></path>
+<!-- Growth Line -->
+<path d="M0,185 Q80,170 160,130 T320,80" fill="none" stroke="#3b82f6" stroke-linecap="round" stroke-width="4"></path>
+<!-- Current Point -->
+<circle cx="320" cy="80" fill="#3b82f6" r="6" stroke="white" stroke-width="2"></circle>
+</svg>
+<!-- Legend/Labels -->
+<div class="absolute -left-6 top-0 h-full flex flex-col justify-between text-[10px] text-slate-400 font-bold">
+<span>18kg</span>
+<span>14kg</span>
+<span>10kg</span>
+<span>6kg</span>
+</div>
+<div class="absolute -bottom-6 left-0 w-full flex justify-between text-[10px] text-slate-400 font-bold px-4">
+<span>Birth</span>
+<span>6m</span>
+<span>12m</span>
+<span>18m</span>
+<span>24m</span>
+<span>30m</span>
+</div>
+</div>
+<div class="mt-10 flex items-center justify-center gap-6 text-[10px] font-bold text-slate-500"><div class="flex items-center gap-1.5">
+<div class="w-3 h-3 rounded-full bg-blue-500"></div>
+<span>Male Standard</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="w-3 h-1 bg-slate-300"></div>
+<span>WHO Median</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="w-3 h-3 rounded-full bg-red-400"></div>
+<span>Risk Zone</span>
+</div></div>
+</section>
+<!-- Growth Recommendations -->
+<section class="space-y-4">
+<h2 class="text-lg font-bold">Recommendations</h2>
+<div class="space-y-3">
+<div class="bg-primary/10 border border-primary/20 p-4 rounded-xl flex gap-4">
+<div class="bg-primary w-12 h-12 rounded-lg flex items-center justify-center text-white shrink-0">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<h3 class="font-bold text-sm">Nutrient Intake</h3>
+<p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Aditya's growth is optimal. Maintain high-protein diet and Vitamin A intake.</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-xl flex gap-4 shadow-sm">
+<div class="bg-slate-100 dark:bg-slate-700 w-12 h-12 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
+<span class="material-symbols-outlined">vaccines</span>
+</div>
+<div>
+<h3 class="font-bold text-sm">Upcoming Immunization</h3>
+<p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Next scheduled: Booster DPT-HB-Hib in 2 weeks at Posyandu Mawar.</p>
+<button class="mt-2 text-xs font-bold text-primary">Set Reminder</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Action Button -->
+<button class="w-full bg-primary text-white py-4 rounded-xl font-bold shadow-lg shadow-primary/30 flex items-center justify-center gap-2 mb-8">
+<span class="material-symbols-outlined">add_chart</span>
+            Input Monthly Progress
+        </button>
+</main>
+<!-- Floating Glassmorphic Bottom Nav -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50">
+<div class="bg-[#013237]/80 backdrop-blur-2xl border border-white/10 rounded-full px-2 py-2 shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex items-center justify-around">
+<!-- Home -->
+<a class="flex flex-col items-center gap-1 w-14 text-white/50 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">home</span>
+<span class="text-[10px] font-bold">Home</span>
+</a>
+<!-- Data -->
+<a class="flex flex-col items-center gap-1 w-14 text-white/50 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">database</span>
+<span class="text-[10px] font-bold">Data</span>
+</a>
+<!-- Central FAB (Input) -->
+<div class="relative -top-6">
+<button class="bg-primary w-14 h-14 rounded-full flex items-center justify-center text-[#013237] shadow-[0_0_20px_rgba(17,212,105,0.4)] border-4 border-[#013237] hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-3xl font-bold">add</span>
+</button>
+<p class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-white/70">Input</p>
+</div>
+<!-- Growth (Active) -->
+<a class="flex flex-col items-center gap-1 w-14 text-primary drop-shadow-[0_0_8px_rgba(17,212,105,0.6)]" href="#">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1">monitoring</span>
+<span class="text-[10px] font-bold">Growth</span>
+</a>
+<!-- Export -->
+<a class="flex flex-col items-center gap-1 w-14 text-white/50 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">ios_share</span>
+<span class="text-[10px] font-bold">Export</span>
+</a>
+</div>
+</nav>
+</body></html>

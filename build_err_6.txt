@@ -1,0 +1,93 @@
+﻿
+[        ] Resolve mutations 
+for :gradle:checkKotlinGradlePlu
+ginConfigurationErrors 
+(Thread[#3994,Execution 
+worker,5,main]) started.
+[        ] :gradle:checkKotlinGr
+adlePluginConfigurationErrors 
+(Thread[#3997,Execution worker 
+Thread 4,5,main]) started.
+[        ] > Task :gradle:checkK
+otlinGradlePluginConfigurationEr
+rors SKIPPED
+[        ] Skipping task ':gradl
+e:checkKotlinGradlePluginConfigu
+rationErrors' as task onlyIf 
+'errorDiagnostics are present' 
+is false.
+[        ] FAILURE: Build 
+failed with an exception.
+[        ] * Exception is:
+[        ] org.gradle.api.Projec
+tConfigurationException: A 
+problem occurred configuring 
+project ':isar_flutter_libs'.
+[        ] 	at org.gradle.config
+uration.project.LifecycleProject
+Evaluator.wrapException(Lifecycl
+eProjectEvaluator.java:84)
+[        ] 	at org.gradle.config
+uration.project.LifecycleProject
+Evaluator.addConfigurationFailur
+e(LifecycleProjectEvaluator.java
+:77)
+[        ] 	at org.gradle.intern
+al.buildprocess.execution.Sessio
+nFailureReportingActionExecutor.
+execute(SessionFailureReportingA
+ctionExecutor.java:51)
+[        ] 	at org.gradle.intern
+al.buildprocess.execution.Sessio
+nFailureReportingActionExecutor.
+execute(SessionFailureReportingA
+ctionExecutor.java:39)
+[        ] 	at org.gradle.intern
+al.concurrent.ExecutorPolicy$Cat
+chAndRecordFailures.onExecute(Ex
+ecutorPolicy.java:64)
+[        ] Caused by: org.gradle
+.api.reflect.ObjectInstantiation
+Exception: Could not create an 
+instance of type com.android.bui
+ld.api.variant.impl.LibraryVaria
+ntBuilderImpl.
+[        ] 	at org.gradle.intern
+al.buildprocess.execution.Sessio
+nFailureReportingActionExecutor.
+execute(SessionFailureReportingA
+ctionExecutor.java:51)
+[        ] 	at org.gradle.intern
+al.buildprocess.execution.Sessio
+nFailureReportingActionExecutor.
+execute(SessionFailureReportingA
+ctionExecutor.java:39)
+[        ] 	at org.gradle.intern
+al.concurrent.ExecutorPolicy$Cat
+chAndRecordFailures.onExecute(Ex
+ecutorPolicy.java:64)
+[        ] Caused by: com.androi
+d.builder.errors.EvalIssueExcept
+ion: Namespace not specified. 
+Specify a namespace in the 
+module's build file: C:\Users\mm
+eyd\AppData\Local\Pub\Cache\host
+ed\pub.dev\isar_flutter_libs-3.1
+.0+1\android\build.gradle. See h
+ttps://d.android.com/r/tools/upg
+rade-assistant/set-namespace 
+for information about setting 
+the namespace.
+[        ] 	at com.android.build
+er.errors.IssueReporter.reportEr
+ror(IssueReporter.kt:119)
+[        ] 	at com.android.build
+er.errors.IssueReporter.reportEr
+ror$default(IssueReporter.kt:114
+)
+System.Management.Automation.Rem
+oteException
+System.Management.Automation.Rem
+oteException
+
+

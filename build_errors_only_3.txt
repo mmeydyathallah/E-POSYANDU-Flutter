@@ -1,0 +1,50 @@
+﻿
+[  +90 ms] Resolve mutations for 
+:gradle:checkKotlinGradlePluginCo
+nfigurationErrors 
+(Thread[#3072,Execution 
+worker,5,main]) started.
+[        ] :gradle:checkKotlinGra
+dlePluginConfigurationErrors 
+(Thread[#3072,Execution 
+worker,5,main]) started.
+[        ] > Task :gradle:checkKo
+tlinGradlePluginConfigurationErro
+rs SKIPPED
+[        ] Skipping task ':gradle
+:checkKotlinGradlePluginConfigura
+tionErrors' as task onlyIf 
+'errorDiagnostics are present' 
+is false.
+[        ] FAILURE: Build failed 
+with an exception.
+[        ] * Exception is:
+[        ] org.gradle.api.Invalid
+UserCodeException: Cannot run 
+Project.afterEvaluate(Action) 
+when the project is already 
+evaluated.
+[        ] 	at org.gradle.interna
+l.buildprocess.execution.SessionF
+ailureReportingActionExecutor.exe
+cute(SessionFailureReportingActio
+nExecutor.java:51)
+[        ] 	at org.gradle.interna
+l.buildprocess.execution.SessionF
+ailureReportingActionExecutor.exe
+cute(SessionFailureReportingActio
+nExecutor.java:39)
+[        ] 	at org.gradle.interna
+l.concurrent.ExecutorPolicy$Catch
+AndRecordFailures.onExecute(Execu
+torPolicy.java:64)
+[        ] BUILD FAILED in 1s
+[  +72 ms] Gradle task 
+assembleRelease failed with exit 
+code 1
+System.Management.Automation.Remo
+teException
+System.Management.Automation.Remo
+teException
+
+

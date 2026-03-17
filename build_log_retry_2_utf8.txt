@@ -1,0 +1,205 @@
+﻿Running Gradle task 'assembleRelease'...                        
+Warning: The plugin flutter_blue_plus_android requires Android SDK version 36 or higher.
+For more information about build configuration, see https://flutter.dev/to/review-gradle-config.
+Warning: The plugin flutter_plugin_android_lifecycle requires Android SDK version 36 or higher.
+For more information about build configuration, see https://flutter.dev/to/review-gradle-config.
+Warning: The plugin image_picker_android requires Android SDK version 36 or higher.
+For more information about build configuration, see https://flutter.dev/to/review-gradle-config.
+Warning: The plugin path_provider_android requires Android SDK version 36 or higher.
+For more information about build configuration, see https://flutter.dev/to/review-gradle-config.
+flutter : Your project is 
+configured to compile against 
+Android SDK 34, but the 
+following plugin(s) require to 
+be compiled against a higher 
+Android SDK version:
+At line:1 char:1
++ flutter build apk --release > 
+build_log_retry_2.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : No 
+   tSpecified: (Your project is  
+  ...id SDK version::String) [   
+ ], RemoteException
+    + FullyQualifiedErrorId : Na 
+   tiveCommandError
+ 
+- flutter_blue_plus_android 
+compiles against Android SDK 36
+- 
+flutter_plugin_android_lifecycle 
+compiles against Android SDK 36
+- image_picker_android compiles 
+against Android SDK 36
+- path_provider_android compiles 
+against Android SDK 36
+Fix this issue by compiling 
+against the highest Android SDK 
+version (they are backward 
+compatible).
+Add the following to C:\Users\mme
+yd\AndroidStudioProjects\E-Posyan
+du Flutter\android\app\build.grad
+le.kts:
+
+    android {
+        compileSdk = 36
+        ...
+    }
+
+FAILURE: Build failed with an 
+exception.
+
+* What went wrong:
+Execution failed for task 
+':app:checkReleaseAarMetadata'.
+> A failure occurred while 
+executing com.android.build.gradl
+e.internal.tasks.CheckAarMetadata
+WorkAction
+   > 4 issues were found when 
+checking AAR metadata:
+
+       1.  Dependency 'androidx.a
+ctivity:activity:1.12.4' 
+requires libraries and 
+applications that
+           depend on it to 
+compile against version 36 or 
+later of the
+           Android APIs.
+
+           :app is currently 
+compiled against android-34.
+
+           Recommended action: 
+Update this project to use a 
+newer compileSdk
+           of at least 36, for 
+example 36.
+
+           Note that updating a 
+library or application's 
+compileSdk (which
+           allows newer APIs to 
+be used) can be done separately 
+from updating
+           targetSdk (which opts 
+the app in to new runtime 
+behavior) and
+           minSdk (which 
+determines which devices the app 
+can be installed
+           on).
+
+       2.  Dependency 
+'androidx.core:core-ktx:1.17.0' 
+requires libraries and 
+applications that
+           depend on it to 
+compile against version 36 or 
+later of the
+           Android APIs.
+
+           :app is currently 
+compiled against android-34.
+
+           Recommended action: 
+Update this project to use a 
+newer compileSdk
+           of at least 36, for 
+example 36.
+
+           Note that updating a 
+library or application's 
+compileSdk (which
+           allows newer APIs to 
+be used) can be done separately 
+from updating
+           targetSdk (which opts 
+the app in to new runtime 
+behavior) and
+           minSdk (which 
+determines which devices the app 
+can be installed
+           on).
+
+       3.  Dependency 
+'androidx.core:core:1.17.0' 
+requires libraries and 
+applications that
+           depend on it to 
+compile against version 36 or 
+later of the
+           Android APIs.
+
+           :app is currently 
+compiled against android-34.
+
+           Recommended action: 
+Update this project to use a 
+newer compileSdk
+           of at least 36, for 
+example 36.
+
+           Note that updating a 
+library or application's 
+compileSdk (which
+           allows newer APIs to 
+be used) can be done separately 
+from updating
+           targetSdk (which opts 
+the app in to new runtime 
+behavior) and
+           minSdk (which 
+determines which devices the app 
+can be installed
+           on).
+
+       4.  Dependency 'androidx.n
+avigationevent:navigationevent-an
+droid:1.0.2' requires libraries 
+and applications that
+           depend on it to 
+compile against version 36 or 
+later of the
+           Android APIs.
+
+           :app is currently 
+compiled against android-34.
+
+           Recommended action: 
+Update this project to use a 
+newer compileSdk
+           of at least 36, for 
+example 36.
+
+           Note that updating a 
+library or application's 
+compileSdk (which
+           allows newer APIs to 
+be used) can be done separately 
+from updating
+           targetSdk (which opts 
+the app in to new runtime 
+behavior) and
+           minSdk (which 
+determines which devices the app 
+can be installed
+           on).
+
+* Try:
+> Run with --stacktrace option 
+to get the stack trace.
+> Run with --info or --debug 
+option to get more log output.
+> Run with --scan to get full 
+insights.
+> Get more help at 
+https://help.gradle.org.
+
+BUILD FAILED in 2s
+Running Gradle task 'assembleRelease'...                            3.1s
+Gradle task assembleRelease 
+failed with exit code 1

@@ -1,0 +1,56 @@
+﻿Running Gradle task 'assembleRelease'...                        
+flutter : e: file:///C:/Users/mme
+yd/AndroidStudioProjects/E-Posyan
+du%20Flutter/android/build.gradle
+.kts:25:56: No type arguments 
+expected for class BasePlugin
+At line:1 char:1
++ flutter build apk --release > 
+build_log_new.txt 2>&1; 
+powershell -Com ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : No 
+   tSpecified: (e: file:///C:/U  
+  ...lass BasePlugin:String) [   
+ ], RemoteException
+    + FullyQualifiedErrorId : Na 
+   tiveCommandError
+ 
+
+FAILURE: Build failed with an 
+exception.
+
+* Where:
+Build file 'C:\Users\mmeyd\Androi
+dStudioProjects\E-Posyandu Flutte
+r\android\build.gradle.kts' 
+line: 25
+
+* What went wrong:
+Script compilation error:
+
+  Line 25:         if (this is co
+m.android.build.gradle.BasePlugin
+<*>) {
+                                 
+                                 
+^ No type arguments expected for 
+class BasePlugin
+
+1 error
+
+* Try:
+> Run with --stacktrace option 
+to get the stack trace.
+> Run with --info or --debug 
+option to get more log output.
+> Run with --scan to get full 
+insights.
+> Get more help at 
+https://help.gradle.org.
+
+BUILD FAILED in 1s
+Running Gradle task 'assembleRelease'...                         1,987ms
+Gradle task assembleRelease 
+failed with exit code 1

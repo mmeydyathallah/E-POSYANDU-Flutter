@@ -1,0 +1,28 @@
+﻿{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "result": {
+    "content": [
+      {
+        "text": "{\"name\":\"projects/4346466614196908066/screens/2380facb9bd74c02b860b275cc952104\",\"title\":\"Home Dashboard (Refined Nav)\",\"screenshot\":{\"name\":\"projects/4346466614196908066/files/7c97e20757704b6798227c253dda336d\",\"downloadUrl\":\"https://lh3.googleusercontent.com/aida/AOfcidU936orJ8Ac3-4gvAjMWAU3hM5eUljRG9nQA14DpwSibpMxd2Jo37bkcZ_-l1XR2l4ixZIHMK_HTNa8W5lYnG9d73adlXDi6zoSso5vSA6QvTsKAAhJcNGC7DFU9wajSFLjBgT412Auz65v2bp34p-Pbv16dVaxSiwmOz5ONY_ANYtLYmdevWPaQu_6DFAh0QiMQqE4W8QoAMVCngHGpq1rxfjqt2llmLjiPdQ452yOLaTmLAceYldAAg\"},\"htmlCode\":{\"name\":\"projects/4346466614196908066/files/4b8df067aea34354bfd35be5eae2bac8\",\"downloadUrl\":\"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sX2Y1MmZmYzdkYWY4NDQ5NzJhYzhjM2VhMzQxNmFiMmFiEgsSBxD4sJLq4QEYAZIBIwoKcHJvamVjdF9pZBIVQhM0MzQ2NDY2NjE0MTk2OTA4MDY2&filename=&opi=89354086\",\"mimeType\":\"text/html\"},\"width\":\"780\",\"height\":\"1768\",\"deviceType\":\"MOBILE\"}",
+        "type": "text"
+      }
+    ],
+    "structuredContent": {
+      "deviceType": "MOBILE",
+      "height": "1768",
+      "htmlCode": {
+        "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sX2Y1MmZmYzdkYWY4NDQ5NzJhYzhjM2VhMzQxNmFiMmFiEgsSBxD4sJLq4QEYAZIBIwoKcHJvamVjdF9pZBIVQhM0MzQ2NDY2NjE0MTk2OTA4MDY2&filename=&opi=89354086",
+        "mimeType": "text/html",
+        "name": "projects/4346466614196908066/files/4b8df067aea34354bfd35be5eae2bac8"
+      },
+      "name": "projects/4346466614196908066/screens/2380facb9bd74c02b860b275cc952104",
+      "screenshot": {
+        "downloadUrl": "https://lh3.googleusercontent.com/aida/AOfcidU936orJ8Ac3-4gvAjMWAU3hM5eUljRG9nQA14DpwSibpMxd2Jo37bkcZ_-l1XR2l4ixZIHMK_HTNa8W5lYnG9d73adlXDi6zoSso5vSA6QvTsKAAhJcNGC7DFU9wajSFLjBgT412Auz65v2bp34p-Pbv16dVaxSiwmOz5ONY_ANYtLYmdevWPaQu_6DFAh0QiMQqE4W8QoAMVCngHGpq1rxfjqt2llmLjiPdQ452yOLaTmLAceYldAAg",
+        "name": "projects/4346466614196908066/files/7c97e20757704b6798227c253dda336d"
+      },
+      "title": "Home Dashboard (Refined Nav)",
+      "width": "780"
+    }
+  }
+}

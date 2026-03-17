@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#11d469",
+                        "background-light": "#EAF9E7",
+                        "background-dark": "#102218",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen text-slate-900 dark:text-slate-100">
+<div class="relative max-w-md mx-auto min-h-screen pb-40">
+<!-- Header -->
+<div class="flex items-center p-6 justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-primary/20 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">Toddler Data</h1>
+</div>
+<button class="bg-white/50 dark:bg-primary/10 p-2 rounded-full border border-white/20">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-200">notifications</span>
+</button>
+</div>
+<!-- Search Section -->
+<div class="px-6 mb-6">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-primary">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="block w-full pl-12 pr-4 py-4 bg-white/80 dark:bg-background-dark/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-sm" placeholder="Search toddler name or ID..." type="text"/>
+</div>
+</div>
+<!-- Filters -->
+<div class="flex gap-3 px-6 mb-8 overflow-x-auto no-scrollbar">
+<button class="flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary text-white px-6 font-medium shadow-lg shadow-primary/20">
+                All
+            </button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-white/60 dark:bg-background-dark/40 px-6 font-medium border border-white/40">
+                Recent
+            </button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-white/60 dark:bg-background-dark/40 px-6 font-medium border border-white/40">
+                High Risk
+            </button>
+</div>
+<!-- List Content -->
+<div class="px-6 space-y-4">
+<div class="flex justify-between items-end mb-2">
+<h3 class="text-lg font-bold">Registered Toddlers</h3>
+<span class="text-xs font-medium text-slate-500">128 Total</span>
+</div>
+<!-- List Item 1 -->
+<div class="glass-card p-4 rounded-xl flex items-center gap-4 transition-transform active:scale-95">
+<div class="relative shrink-0">
+<img class="size-16 rounded-full object-cover border-2 border-white shadow-sm" data-alt="Portrait of a smiling toddler" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJZsSj7LwiQeZ5LBhoGMoox7H0uN3jD6WCn6VyBgUyHBUX0NzS3d7jsswEpn66E_e9ODxveho1-Njs8yoDxGsB-JfG0vJan-J9-cq5tYAmfEp2pkid-dDcZFR0dwJmcej-ktis4aHdjWdd0e8FWlgrK28xKVryqdgBHDjM5uqLy8YiGpPKyl0dz5TNcXMCEhn_r08WIO9hoqDRZq0JifJULnPZ6-MGi3VQyW_DUEJkRpgvfWBgJVcMCvpaJpZqUUKtu3fseGX1QiI"/>
+<div class="absolute bottom-0 right-0 size-4 bg-primary rounded-full border-2 border-white"></div>
+</div>
+<div class="flex-1">
+<p class="font-bold text-slate-800 dark:text-slate-100">Arlo Wijaya</p>
+<p class="text-xs text-slate-500 font-medium">24 Months • ID: 88201</p>
+<div class="mt-2 inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-wide uppercase">
+                        Healthy
+                    </div>
+</div>
+<div class="text-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="glass-card p-4 rounded-xl flex items-center gap-4 transition-transform active:scale-95 border-l-4 border-l-amber-400">
+<div class="relative shrink-0">
+<img class="size-16 rounded-full object-cover border-2 border-white shadow-sm" data-alt="Baby in a colorful shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiI6lh5MTi7sSM08O1ekv8LbaoY7F9j86JKw9kNESG14_Tsr2m2tPS7Lap_NJhIWyrT9fo79dStxV7_be5lU63eqzuYV-6BMu2sduxyQKQd1YNBK6XJ_-AJ4FIeBAJF5OVSwf7vlOowLRl3gAbXhNix4e07zmK_y0OEUFmFXBY8s7lc1DZMp6T1cSDkCPbKTaLx3S-L9NmVNbaEjz-ycCvmsePokZ_pgt_3mw5d2J6SHxxfJh_Xnci6htnAOOGhgbqrhv0KxjJ_uQ"/>
+<div class="absolute bottom-0 right-0 size-4 bg-amber-400 rounded-full border-2 border-white"></div>
+</div>
+<div class="flex-1">
+<p class="font-bold text-slate-800 dark:text-slate-100">Bibi Khairunnisa</p>
+<p class="text-xs text-slate-500 font-medium">18 Months • ID: 88204</p>
+<div class="mt-2 inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-600 text-[10px] font-bold tracking-wide uppercase">
+                        Observation
+                    </div>
+</div>
+<div class="text-slate-400">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</div>
+<!-- List Item 3 -->
+<div class="glass-card p-4 rounded-xl flex items-center gap-4 transition-transform active:scale-95">
+<div class="relative shrink-0">
+<img class="size-16 rounded-full object-cover border-2 border-white shadow-sm" data-alt="Happy infant lying down" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi3IzBXC3yoHeA-1i2i6fVmg-Pk9ryAi5efohVUKItyjBGIP-agW-HEu_zfS83W6w5liqWTXcKNH80dsarBGEArzd6IvbIPng3dtBh4W6poAekrrD-dVEL2Jtg5L-_h2zCkNxwzvCq3icCaRCr0TdaiWiQzLHup7KXmNRMyW6n2Mtnl6r0XkEuDqnIeh0e6kYmb7yCc0I3XLtL9GYrI5U_ul4dawL_jqjmrH88xCWl0QDP6dTc5eWnrG2Ffk2Xp2Wx8HFMAUazHNg"/>
+<div class="absolute bottom-0 right-0 size-4 bg-primary rounded-full border-2 border-white"></div>
+</div>
+<div class="flex-1">
+<p class="font-bold text-slate-800 dark:text-slate-100">Cakra Mahendra</p>
+<p class="text-xs text-slate-500 font-medium">32 Months • ID: 88209</p>
+<div class="mt-2 inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-wide uppercase">
+                        Healthy
+                    </div>
+</div>
+<div class="text-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</div>
+<!-- List Item 4 -->
+<div class="glass-card p-4 rounded-xl flex items-center gap-4 transition-transform active:scale-95">
+<div class="relative shrink-0">
+<img class="size-16 rounded-full object-cover border-2 border-white shadow-sm" data-alt="Baby boy portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAZQSDLRXNXJgFkWw0uVfQiTTO8xQ_sMF7NrtLCWpAr_YeIfvlZHMcRT08n8IdKYOihrG-AqJxzQNqrb9LiFipmd-GT9XlF-d0zHMunAgTqHYhl3ynj1sdXp2Qn3Thd6BIeRhdtWnYHAEKq7jYvkPNXbbuURLjmjvRSHWW1CTUFs8k_2TrOjC7gO9r7MRU8LkLsAb_QN-t1Ty5D0r3ydKtDRJebG_2PLO8sLyDyEShPFhhLfZgulfTmiUluQ6j1q_v0NIbLJZi27k"/>
+<div class="absolute bottom-0 right-0 size-4 bg-primary rounded-full border-2 border-white"></div>
+</div>
+<div class="flex-1">
+<p class="font-bold text-slate-800 dark:text-slate-100">Dafa Ramadhan</p>
+<p class="text-xs text-slate-500 font-medium">12 Months • ID: 88212</p>
+<div class="mt-2 inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-wide uppercase">
+                        Healthy
+                    </div>
+</div>
+<div class="text-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Floating Add Button -->
+<!-- Bottom Navigation -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-md bg-[#013237]/80 backdrop-blur-2xl rounded-3xl p-2 pb-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-end justify-between z-50 border border-white/10">
+<a class="flex flex-col items-center gap-1.5 flex-1 py-2 text-white/50 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+<span class="text-[10px] font-bold tracking-wider uppercase">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 flex-1 py-2 text-[#11d469] drop-shadow-[0_0_8px_rgba(17,212,105,0.6)]" href="#">
+<span class="material-symbols-outlined text-2xl font-fill">group</span>
+<span class="text-[10px] font-bold tracking-wider uppercase">Data</span>
+</a>
+<div class="flex-1 flex flex-col items-center -mb-2">
+<button class="size-16 bg-[#11d469] text-[#013237] rounded-full shadow-[0_0_20px_rgba(17,212,105,0.4)] flex items-center justify-center -translate-y-8 border-4 border-[#013237] active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-3xl font-bold">add</span>
+</button>
+<span class="text-[10px] font-bold text-white/50 tracking-wider uppercase -translate-y-6">Input</span>
+</div>
+<a class="flex flex-col items-center gap-1.5 flex-1 py-2 text-white/50 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">monitoring</span>
+<span class="text-[10px] font-bold tracking-wider uppercase">Growth</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 flex-1 py-2 text-white/50 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">ios_share</span>
+<span class="text-[10px] font-bold tracking-wider uppercase">Export</span>
+</a>
+</div>
+</div>
+</body></html>

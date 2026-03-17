@@ -1,0 +1,782 @@
+﻿
+[ +107 ms] Resolve mutations for 
+:gradle:checkKotlinGradlePluginCo
+nfigurationErrors 
+(Thread[#3357,Execution 
+worker,5,main]) started.
+[        ] :gradle:checkKotlinGra
+dlePluginConfigurationErrors 
+(Thread[#3357,Execution 
+worker,5,main]) started.
+[        ] > Task :gradle:checkKo
+tlinGradlePluginConfigurationErro
+rs SKIPPED
+[        ] Skipping task ':gradle
+:checkKotlinGradlePluginConfigura
+tionErrors' as task onlyIf 
+'errorDiagnostics are present' 
+is false.
+[ +296 ms] Tasks to be executed: 
+[task ':app:ReleaseMinSdkCheck', 
+task ':app:compileFlutterBuildRel
+ease', task ':app:packJniLibsflut
+terBuildRelease', task 
+':app:preBuild', task 
+':app:preReleaseBuild', task ':ap
+p:configureCMakeRelease[arm64-v8a
+]', task ':app:buildCMakeRelease[
+arm64-v8a]', task ':app:configure
+CMakeRelease[armeabi-v7a]', task 
+':app:buildCMakeRelease[armeabi-v
+7a]', task ':app:configureCMakeRe
+lease[x86_64]', task ':app:buildC
+MakeRelease[x86_64]', task ':app:
+mergeReleaseJniLibFolders', task 
+':flutter_blue_plus_android:preBu
+ild', task ':flutter_blue_plus_an
+droid:preReleaseBuild', task ':fl
+utter_blue_plus_android:mergeRele
+aseJniLibFolders', task ':flutter
+_blue_plus_android:mergeReleaseNa
+tiveLibs', task ':flutter_blue_pl
+us_android:copyReleaseJniLibsProj
+ectOnly', task ':flutter_plugin_a
+ndroid_lifecycle:preBuild', task 
+':flutter_plugin_android_lifecycl
+e:preReleaseBuild', task ':flutte
+r_plugin_android_lifecycle:mergeR
+eleaseJniLibFolders', task ':flut
+ter_plugin_android_lifecycle:merg
+eReleaseNativeLibs', task ':flutt
+er_plugin_android_lifecycle:copyR
+eleaseJniLibsProjectOnly', task '
+:image_picker_android:preBuild', 
+task ':image_picker_android:preRe
+leaseBuild', task ':image_picker_
+android:mergeReleaseJniLibFolders
+', task ':image_picker_android:me
+rgeReleaseNativeLibs', task ':ima
+ge_picker_android:copyReleaseJniL
+ibsProjectOnly', task 
+':isar_flutter_libs:preBuild', 
+task ':isar_flutter_libs:preRelea
+seBuild', task ':isar_flutter_lib
+s:mergeReleaseJniLibFolders', 
+task ':isar_flutter_libs:mergeRel
+easeNativeLibs', task ':isar_flut
+ter_libs:copyReleaseJniLibsProjec
+tOnly', task ':path_provider_andr
+oid:preBuild', task ':path_provid
+er_android:preReleaseBuild', 
+task ':path_provider_android:merg
+eReleaseJniLibFolders', task ':pa
+th_provider_android:mergeReleaseN
+ativeLibs', task ':path_provider_
+android:copyReleaseJniLibsProject
+Only', task 
+':printing:preBuild', task 
+':printing:preReleaseBuild', 
+task ':printing:mergeReleaseJniLi
+bFolders', task ':printing:mergeR
+eleaseNativeLibs', task ':printin
+g:copyReleaseJniLibsProjectOnly',
+ task ':share_plus:preBuild', 
+task 
+':share_plus:preReleaseBuild', 
+task ':share_plus:mergeReleaseJni
+LibFolders', task ':share_plus:me
+rgeReleaseNativeLibs', task ':sha
+re_plus:copyReleaseJniLibsProject
+Only', task 
+':app:mergeReleaseNativeLibs', 
+task 
+':app:stripReleaseDebugSymbols', 
+task ':app:extractReleaseNativeSy
+mbolTables', task ':app:mergeRele
+aseNativeDebugMetadata', task ':f
+lutter_blue_plus_android:generate
+ReleaseResValues', task ':flutter
+_blue_plus_android:generateReleas
+eResources', task ':flutter_blue_
+plus_android:packageReleaseResour
+ces', task ':flutter_blue_plus_an
+droid:parseReleaseLocalResources'
+, task ':flutter_blue_plus_androi
+d:generateReleaseRFile', task ':f
+lutter_blue_plus_android:javaPreC
+ompileRelease', task ':flutter_bl
+ue_plus_android:compileReleaseJav
+aWithJavac', task ':flutter_blue_
+plus_android:mergeReleaseGenerate
+dProguardFiles', task ':flutter_b
+lue_plus_android:exportReleaseCon
+sumerProguardFiles', task ':flutt
+er_plugin_android_lifecycle:gener
+ateReleaseResValues', task ':flut
+ter_plugin_android_lifecycle:gene
+rateReleaseResources', task ':flu
+tter_plugin_android_lifecycle:pac
+kageReleaseResources', task ':flu
+tter_plugin_android_lifecycle:par
+seReleaseLocalResources', task ':
+flutter_plugin_android_lifecycle:
+generateReleaseRFile', task ':flu
+tter_plugin_android_lifecycle:jav
+aPreCompileRelease', task ':flutt
+er_plugin_android_lifecycle:compi
+leReleaseJavaWithJavac', task ':f
+lutter_plugin_android_lifecycle:b
+undleLibCompileToJarRelease', 
+task ':image_picker_android:gener
+ateReleaseResValues', task ':imag
+e_picker_android:generateReleaseR
+esources', task ':image_picker_an
+droid:packageReleaseResources', 
+task ':image_picker_android:parse
+ReleaseLocalResources', task ':im
+age_picker_android:generateReleas
+eRFile', task ':image_picker_andr
+oid:javaPreCompileRelease', task 
+':image_picker_android:compileRel
+easeJavaWithJavac', task ':image_
+picker_android:mergeReleaseGenera
+tedProguardFiles', task ':image_p
+icker_android:exportReleaseConsum
+erProguardFiles', task ':flutter_
+plugin_android_lifecycle:mergeRel
+easeGeneratedProguardFiles', 
+task ':flutter_plugin_android_lif
+ecycle:exportReleaseConsumerProgu
+ardFiles', task ':isar_flutter_li
+bs:generateReleaseResValues', 
+task ':isar_flutter_libs:generate
+ReleaseResources', task ':isar_fl
+utter_libs:packageReleaseResource
+s', task ':isar_flutter_libs:pars
+eReleaseLocalResources', task ':i
+sar_flutter_libs:generateReleaseR
+File', task ':isar_flutter_libs:j
+avaPreCompileRelease', task ':isa
+r_flutter_libs:compileReleaseJava
+WithJavac', task ':isar_flutter_l
+ibs:mergeReleaseGeneratedProguard
+Files', task ':isar_flutter_libs:
+exportReleaseConsumerProguardFile
+s', task ':path_provider_android:
+generateReleaseResValues', task '
+:path_provider_android:generateRe
+leaseResources', task ':path_prov
+ider_android:packageReleaseResour
+ces', task ':path_provider_androi
+d:parseReleaseLocalResources', 
+task ':path_provider_android:gene
+rateReleaseRFile', task ':path_pr
+ovider_android:javaPreCompileRele
+ase', task ':path_provider_androi
+d:compileReleaseJavaWithJavac', 
+task ':path_provider_android:merg
+eReleaseGeneratedProguardFiles', 
+task ':path_provider_android:expo
+rtReleaseConsumerProguardFiles', 
+task ':printing:generateReleaseRe
+sValues', task ':printing:generat
+eReleaseResources', task ':printi
+ng:packageReleaseResources', 
+task ':printing:parseReleaseLocal
+Resources', task ':printing:gener
+ateReleaseRFile', task ':printing
+:javaPreCompileRelease', task ':p
+rinting:compileReleaseJavaWithJav
+ac', task ':printing:mergeRelease
+GeneratedProguardFiles', task ':p
+rinting:exportReleaseConsumerProg
+uardFiles', task ':share_plus:che
+ckKotlinGradlePluginConfiguration
+Errors', task ':share_plus:genera
+teReleaseResValues', task ':share
+_plus:generateReleaseResources', 
+task ':share_plus:packageReleaseR
+esources', task ':share_plus:pars
+eReleaseLocalResources', task ':s
+hare_plus:generateReleaseRFile', 
+task ':share_plus:compileReleaseK
+otlin', task ':share_plus:javaPre
+CompileRelease', task ':share_plu
+s:compileReleaseJavaWithJavac', 
+task ':share_plus:mergeReleaseGen
+eratedProguardFiles', task ':shar
+e_plus:exportReleaseConsumerProgu
+ardFiles', task ':app:buildKotlin
+ToolingMetadata', task ':app:chec
+kReleaseDuplicateClasses', task '
+:app:checkKotlinGradlePluginConfi
+gurationErrors', task ':flutter_b
+lue_plus_android:writeReleaseAarM
+etadata', task ':flutter_plugin_a
+ndroid_lifecycle:writeReleaseAarM
+etadata', task ':image_picker_and
+roid:writeReleaseAarMetadata', 
+task ':isar_flutter_libs:writeRel
+easeAarMetadata', task ':path_pro
+vider_android:writeReleaseAarMeta
+data', task ':printing:writeRelea
+seAarMetadata', task ':share_plus
+:writeReleaseAarMetadata', task 
+':app:checkReleaseAarMetadata', 
+task 
+':app:cleanMergeReleaseAssets', 
+task ':app:mergeReleaseShaders', 
+task 
+':app:compileReleaseShaders', 
+task 
+':app:generateReleaseAssets', 
+task ':flutter_blue_plus_android:
+mergeReleaseShaders', task ':flut
+ter_blue_plus_android:compileRele
+aseShaders', task ':flutter_blue_
+plus_android:generateReleaseAsset
+s', task ':flutter_blue_plus_andr
+oid:mergeReleaseAssets', task ':f
+lutter_plugin_android_lifecycle:m
+ergeReleaseShaders', task ':flutt
+er_plugin_android_lifecycle:compi
+leReleaseShaders', task ':flutter
+_plugin_android_lifecycle:generat
+eReleaseAssets', task ':flutter_p
+lugin_android_lifecycle:mergeRele
+aseAssets', task ':image_picker_a
+ndroid:mergeReleaseShaders', 
+task ':image_picker_android:compi
+leReleaseShaders', task ':image_p
+icker_android:generateReleaseAsse
+ts', task ':image_picker_android:
+mergeReleaseAssets', task ':isar_
+flutter_libs:mergeReleaseShaders'
+, task ':isar_flutter_libs:compil
+eReleaseShaders', task ':isar_flu
+tter_libs:generateReleaseAssets',
+ task ':isar_flutter_libs:mergeRe
+leaseAssets', task ':path_provide
+r_android:mergeReleaseShaders', 
+task ':path_provider_android:comp
+ileReleaseShaders', task ':path_p
+rovider_android:generateReleaseAs
+sets', task ':path_provider_andro
+id:mergeReleaseAssets', task 
+':printing:mergeReleaseShaders', 
+task ':printing:compileReleaseSha
+ders', task ':printing:generateRe
+leaseAssets', task 
+':printing:mergeReleaseAssets', 
+task ':share_plus:mergeReleaseSha
+ders', task ':share_plus:compileR
+eleaseShaders', task ':share_plus
+:generateReleaseAssets', task ':s
+hare_plus:mergeReleaseAssets', 
+task ':app:mergeReleaseAssets', 
+task 
+':app:copyFlutterAssetsRelease', 
+task 
+':app:generateReleaseResValues', 
+task 
+':app:mapReleaseSourceSetPaths', 
+task 
+':app:generateReleaseResources', 
+task 
+':app:mergeReleaseResources', 
+task 
+':app:packageReleaseResources', 
+task ':app:parseReleaseLocalResou
+rces', task ':app:createReleaseCo
+mpatibleScreenManifests', task 
+':app:extractDeepLinksRelease', 
+task ':flutter_blue_plus_android:
+extractDeepLinksRelease', task ':
+flutter_blue_plus_android:process
+ReleaseManifest', task ':flutter_
+plugin_android_lifecycle:extractD
+eepLinksRelease', task ':flutter_
+plugin_android_lifecycle:processR
+eleaseManifest', task ':image_pic
+ker_android:extractDeepLinksRelea
+se', task ':image_picker_android:
+processReleaseManifest', task ':i
+sar_flutter_libs:extractDeepLinks
+Release', task ':isar_flutter_lib
+s:processReleaseManifest', task '
+:path_provider_android:extractDee
+pLinksRelease', task ':path_provi
+der_android:processReleaseManifes
+t', task ':printing:extractDeepLi
+nksRelease', task ':printing:proc
+essReleaseManifest', task ':share
+_plus:extractDeepLinksRelease', 
+task ':share_plus:processReleaseM
+anifest', task ':app:processRelea
+seMainManifest', task ':app:outpu
+tReleaseAppLinkSettings', task 
+':app:processReleaseManifest', 
+task ':app:processReleaseManifest
+ForPackage', task 
+':app:processReleaseResources', 
+task ':flutter_blue_plus_android:
+bundleLibCompileToJarRelease', 
+task ':image_picker_android:bundl
+eLibCompileToJarRelease', task ':
+isar_flutter_libs:bundleLibCompil
+eToJarRelease', task ':path_provi
+der_android:bundleLibCompileToJar
+Release', task ':printing:bundleL
+ibCompileToJarRelease', task ':sh
+are_plus:bundleLibCompileToJarRel
+ease', task 
+':app:compileReleaseKotlin', 
+task 
+':app:javaPreCompileRelease', 
+task ':app:compileReleaseJavaWith
+Javac', task ':flutter_blue_plus_
+android:prepareReleaseArtProfile'
+, task ':flutter_plugin_android_l
+ifecycle:prepareReleaseArtProfile
+', task ':image_picker_android:pr
+epareReleaseArtProfile', task ':i
+sar_flutter_libs:prepareReleaseAr
+tProfile', task ':path_provider_a
+ndroid:prepareReleaseArtProfile',
+ task ':printing:prepareReleaseAr
+tProfile', task ':share_plus:prep
+areReleaseArtProfile', task 
+':app:mergeReleaseArtProfile', 
+task ':flutter_blue_plus_android:
+bundleLibRuntimeToJarRelease', 
+task ':flutter_plugin_android_lif
+ecycle:bundleLibRuntimeToJarRelea
+se', task ':image_picker_android:
+bundleLibRuntimeToJarRelease', 
+task ':isar_flutter_libs:bundleLi
+bRuntimeToJarRelease', task ':pat
+h_provider_android:bundleLibRunti
+meToJarRelease', task ':printing:
+bundleLibRuntimeToJarRelease', 
+task ':share_plus:bundleLibRuntim
+eToJarRelease', task ':app:expand
+ReleaseArtProfileWildcards', 
+task 
+':app:extractProguardFiles', 
+task ':app:mergeReleaseGeneratedP
+roguardFiles', task 
+':app:processReleaseJavaRes', 
+task ':flutter_blue_plus_android:
+processReleaseJavaRes', task ':fl
+utter_plugin_android_lifecycle:pr
+ocessReleaseJavaRes', task ':imag
+e_picker_android:processReleaseJa
+vaRes', task ':isar_flutter_libs:
+processReleaseJavaRes', task ':pa
+th_provider_android:processReleas
+eJavaRes', task ':printing:proces
+sReleaseJavaRes', task ':share_pl
+us:processReleaseJavaRes', task 
+':app:mergeReleaseJavaResource', 
+task ':app:mergeReleaseStartupPro
+file', task 
+':app:minifyReleaseWithR8', task 
+':app:compileReleaseArtProfile', 
+task 
+':app:compressReleaseAssets', 
+task ':app:extractReleaseVersionC
+ontrolInfo', task ':flutter_blue_
+plus_android:createFullJarRelease
+', task ':flutter_blue_plus_andro
+id:extractProguardFiles', task ':
+flutter_blue_plus_android:generat
+eReleaseLintModel', task ':flutte
+r_blue_plus_android:prepareLintJa
+rForPublish', task ':flutter_plug
+in_android_lifecycle:createFullJa
+rRelease', task ':flutter_plugin_
+android_lifecycle:extractProguard
+Files', task ':flutter_plugin_and
+roid_lifecycle:generateReleaseLin
+tModel', task ':flutter_plugin_an
+droid_lifecycle:prepareLintJarFor
+Publish', task ':image_picker_and
+roid:createFullJarRelease', task 
+':image_picker_android:extractPro
+guardFiles', task ':image_picker_
+android:generateReleaseLintModel'
+, task ':image_picker_android:pre
+pareLintJarForPublish', task ':is
+ar_flutter_libs:createFullJarRele
+ase', task ':isar_flutter_libs:ex
+tractProguardFiles', task ':isar_
+flutter_libs:generateReleaseLintM
+odel', task ':isar_flutter_libs:p
+repareLintJarForPublish', task ':
+path_provider_android:createFullJ
+arRelease', task ':path_provider_
+android:extractProguardFiles', 
+task ':path_provider_android:gene
+rateReleaseLintModel', task ':pat
+h_provider_android:prepareLintJar
+ForPublish', task ':printing:crea
+teFullJarRelease', task ':printin
+g:extractProguardFiles', task ':p
+rinting:generateReleaseLintModel'
+, task ':printing:prepareLintJarF
+orPublish', task ':share_plus:cre
+ateFullJarRelease', task ':share_
+plus:extractProguardFiles', task 
+':share_plus:generateReleaseLintM
+odel', task ':share_plus:prepareL
+intJarForPublish', task ':app:gen
+erateReleaseLintVitalReportModel'
+, task ':flutter_blue_plus_androi
+d:stripReleaseDebugSymbols', 
+task ':flutter_blue_plus_android:
+copyReleaseJniLibsProjectAndLocal
+Jars', task ':flutter_blue_plus_a
+ndroid:extractDeepLinksForAarRele
+ase', task ':flutter_blue_plus_an
+droid:extractReleaseAnnotations',
+ task ':flutter_blue_plus_android
+:mergeReleaseConsumerProguardFile
+s', task ':flutter_blue_plus_andr
+oid:mergeReleaseJavaResource', 
+task ':flutter_blue_plus_android:
+syncReleaseLibJars', task ':flutt
+er_blue_plus_android:bundleReleas
+eLocalLintAar', task ':image_pick
+er_android:stripReleaseDebugSymbo
+ls', task ':image_picker_android:
+copyReleaseJniLibsProjectAndLocal
+Jars', task ':image_picker_androi
+d:extractDeepLinksForAarRelease',
+ task ':image_picker_android:extr
+actReleaseAnnotations', task ':im
+age_picker_android:mergeReleaseCo
+nsumerProguardFiles', task ':imag
+e_picker_android:mergeReleaseJava
+Resource', task ':image_picker_an
+droid:syncReleaseLibJars', task '
+:image_picker_android:bundleRelea
+seLocalLintAar', task ':flutter_p
+lugin_android_lifecycle:stripRele
+aseDebugSymbols', task ':flutter_
+plugin_android_lifecycle:copyRele
+aseJniLibsProjectAndLocalJars', 
+task ':flutter_plugin_android_lif
+ecycle:extractDeepLinksForAarRele
+ase', task ':flutter_plugin_andro
+id_lifecycle:extractReleaseAnnota
+tions', task ':flutter_plugin_and
+roid_lifecycle:mergeReleaseConsum
+erProguardFiles', task ':flutter_
+plugin_android_lifecycle:mergeRel
+easeJavaResource', task ':flutter
+_plugin_android_lifecycle:syncRel
+easeLibJars', task ':flutter_plug
+in_android_lifecycle:bundleReleas
+eLocalLintAar', task ':isar_flutt
+er_libs:stripReleaseDebugSymbols'
+, task ':isar_flutter_libs:copyRe
+leaseJniLibsProjectAndLocalJars',
+ task ':isar_flutter_libs:extract
+DeepLinksForAarRelease', task ':i
+sar_flutter_libs:extractReleaseAn
+notations', task ':isar_flutter_l
+ibs:mergeReleaseConsumerProguardF
+iles', task ':isar_flutter_libs:m
+ergeReleaseJavaResource', task ':
+isar_flutter_libs:syncReleaseLibJ
+ars', task ':isar_flutter_libs:bu
+ndleReleaseLocalLintAar', task ':
+path_provider_android:stripReleas
+eDebugSymbols', task ':path_provi
+der_android:copyReleaseJniLibsPro
+jectAndLocalJars', task ':path_pr
+ovider_android:extractDeepLinksFo
+rAarRelease', task ':path_provide
+r_android:extractReleaseAnnotatio
+ns', task ':path_provider_android
+:mergeReleaseConsumerProguardFile
+s', task ':path_provider_android:
+mergeReleaseJavaResource', task '
+:path_provider_android:syncReleas
+eLibJars', task ':path_provider_a
+ndroid:bundleReleaseLocalLintAar'
+, task ':printing:stripReleaseDeb
+ugSymbols', task ':printing:copyR
+eleaseJniLibsProjectAndLocalJars'
+, task ':printing:extractDeepLink
+sForAarRelease', task ':printing:
+extractReleaseAnnotations', task 
+':printing:mergeReleaseConsumerPr
+oguardFiles', task ':printing:mer
+geReleaseJavaResource', task 
+':printing:syncReleaseLibJars', 
+task ':printing:bundleReleaseLoca
+lLintAar', task ':share_plus:stri
+pReleaseDebugSymbols', task ':sha
+re_plus:copyReleaseJniLibsProject
+AndLocalJars', task ':share_plus:
+extractDeepLinksForAarRelease', 
+task ':share_plus:extractReleaseA
+nnotations', task ':share_plus:me
+rgeReleaseConsumerProguardFiles',
+ task ':share_plus:mergeReleaseJa
+vaResource', task ':share_plus:sy
+ncReleaseLibJars', task ':share_p
+lus:bundleReleaseLocalLintAar', 
+task ':flutter_blue_plus_android:
+lintVitalAnalyzeRelease', task ':
+flutter_blue_plus_android:writeRe
+leaseLintModelMetadata', task ':f
+lutter_plugin_android_lifecycle:l
+intVitalAnalyzeRelease', task ':f
+lutter_plugin_android_lifecycle:w
+riteReleaseLintModelMetadata', 
+task ':image_picker_android:lintV
+italAnalyzeRelease', task ':image
+_picker_android:writeReleaseLintM
+odelMetadata', task ':isar_flutte
+r_libs:lintVitalAnalyzeRelease', 
+task ':isar_flutter_libs:writeRel
+easeLintModelMetadata', task ':pa
+th_provider_android:lintVitalAnal
+yzeRelease', task ':path_provider
+_android:writeReleaseLintModelMet
+adata', task ':printing:lintVital
+AnalyzeRelease', task ':printing:
+writeReleaseLintModelMetadata', 
+task ':share_plus:lintVitalAnalyz
+eRelease', task ':share_plus:writ
+eReleaseLintModelMetadata', task 
+':app:lintVitalAnalyzeRelease', 
+task ':flutter_blue_plus_android:
+generateReleaseLintVitalModel', 
+task ':flutter_plugin_android_lif
+ecycle:generateReleaseLintVitalMo
+del', task ':image_picker_android
+:generateReleaseLintVitalModel', 
+task ':isar_flutter_libs:generate
+ReleaseLintVitalModel', task ':pa
+th_provider_android:generateRelea
+seLintVitalModel', task ':printin
+g:generateReleaseLintVitalModel',
+ task ':share_plus:generateReleas
+eLintVitalModel', task 
+':app:lintVitalReportRelease', 
+task ':app:lintVitalRelease', 
+task ':app:convertShrunkResources
+ToBinaryRelease', task 
+':app:optimizeReleaseResources', 
+task ':app:collectReleaseDependen
+cies', task 
+':app:sdkReleaseDependencyData', 
+task 
+':app:validateSigningRelease', 
+task 
+':app:writeReleaseAppMetadata', 
+task ':app:writeReleaseSigningCon
+figVersions', task 
+':app:packageRelease', task ':app
+:createReleaseApkListingFileRedir
+ect', task 
+':app:assembleRelease', task ':fl
+utter_blue_plus_android:bundleRel
+easeAar', task ':flutter_blue_plu
+s_android:mapReleaseSourceSetPath
+s', task ':flutter_blue_plus_andr
+oid:mergeReleaseResources', task 
+':flutter_blue_plus_android:verif
+yReleaseResources', task ':flutte
+r_blue_plus_android:assembleRelea
+se', task ':flutter_plugin_androi
+d_lifecycle:bundleReleaseAar', 
+task ':flutter_plugin_android_lif
+ecycle:mapReleaseSourceSetPaths',
+ task ':flutter_plugin_android_li
+fecycle:mergeReleaseResources', 
+task ':flutter_plugin_android_lif
+ecycle:verifyReleaseResources', 
+task ':flutter_plugin_android_lif
+ecycle:assembleRelease', task ':i
+mage_picker_android:bundleRelease
+Aar', task ':flutter_plugin_andro
+id_lifecycle:compileReleaseLibrar
+yResources', task ':image_picker_
+android:mapReleaseSourceSetPaths'
+, task ':image_picker_android:mer
+geReleaseResources', task ':image
+_picker_android:verifyReleaseReso
+urces', task ':image_picker_andro
+id:assembleRelease', task ':isar_
+flutter_libs:bundleReleaseAar', 
+task ':isar_flutter_libs:mapRelea
+seSourceSetPaths', task ':isar_fl
+utter_libs:mergeReleaseResources'
+, task ':isar_flutter_libs:verify
+ReleaseResources', task ':isar_fl
+utter_libs:assembleRelease', 
+task ':path_provider_android:bund
+leReleaseAar', task ':path_provid
+er_android:mapReleaseSourceSetPat
+hs', task ':path_provider_android
+:mergeReleaseResources', task ':p
+ath_provider_android:verifyReleas
+eResources', task ':path_provider
+_android:assembleRelease', task 
+':printing:bundleReleaseAar', 
+task ':printing:mapReleaseSourceS
+etPaths', task ':printing:mergeRe
+leaseResources', task ':printing:
+verifyReleaseResources', task 
+':printing:assembleRelease', 
+task 
+':share_plus:bundleReleaseAar', 
+task ':share_plus:mapReleaseSourc
+eSetPaths', task ':share_plus:mer
+geReleaseResources', task ':share
+_plus:verifyReleaseResources', 
+task 
+':share_plus:assembleRelease']
+[        ] Resolve mutations for 
+:share_plus:checkKotlinGradlePlug
+inConfigurationErrors 
+(Thread[#3362,Execution worker 
+Thread 6,5,main]) started.
+[        ] :share_plus:checkKotli
+nGradlePluginConfigurationErrors 
+(Thread[#3362,Execution worker 
+Thread 6,5,main]) started.
+[        ] > Task :share_plus:che
+ckKotlinGradlePluginConfiguration
+Errors SKIPPED
+[        ] Skipping task ':share_
+plus:checkKotlinGradlePluginConfi
+gurationErrors' as task onlyIf 
+'errorDiagnostics are present' 
+is false.
+[        ] Resolve mutations for 
+:app:checkKotlinGradlePluginConfi
+gurationErrors 
+(Thread[#3364,Execution worker 
+Thread 8,5,main]) started.
+[        ] :app:checkKotlinGradle
+PluginConfigurationErrors 
+(Thread[#3364,Execution worker 
+Thread 8,5,main]) started.
+[        ] > Task :app:checkKotli
+nGradlePluginConfigurationErrors 
+SKIPPED
+[        ] Skipping task ':app:ch
+eckKotlinGradlePluginConfiguratio
+nErrors' as task onlyIf 
+'errorDiagnostics are present' 
+is false.
+[ +491 ms] > Task :isar_flutter_l
+ibs:verifyReleaseResources FAILED
+[        ]   Task has failed 
+previously.
+[        ] Android resource 
+linking failed:
+[   +1 ms] FAILURE: Build failed 
+with an exception.
+[        ] Execution failed for 
+task ':isar_flutter_libs:verifyRe
+leaseResources'.
+[        ] > A failure occurred 
+while executing com.android.build
+.gradle.tasks.VerifyLibraryResour
+cesTask$Action
+[        ]    > Android resource 
+linking failed
+[        ]      ERROR: C:\Users\m
+meyd\AndroidStudioProjects\E-Posy
+andu Flutter\build\isar_flutter_l
+ibs\intermediates\merged_res\rele
+ase\mergeReleaseResources\values\
+values.xml:194: AAPT: error: 
+resource android:attr/lStar not 
+found.
+[        ] * Exception is:
+[        ] org.gradle.api.tasks.T
+askExecutionException: Execution 
+failed for task ':isar_flutter_li
+bs:verifyReleaseResources'.
+[        ] 	at org.gradle.interna
+l.Try$Failure.ifSuccessfulOrElse(
+Try.java:293)
+[        ] 	at org.gradle.api.int
+ernal.tasks.execution.CatchExcept
+ionTaskExecuter.execute(CatchExce
+ptionTaskExecuter.java:36)
+[        ] 	at org.gradle.interna
+l.concurrent.ExecutorPolicy$Catch
+AndRecordFailures.onExecute(Execu
+torPolicy.java:64)
+[        ] Caused by: org.gradle.
+workers.internal.DefaultWorkerExe
+cutor$WorkExecutionException: A 
+failure occurred while executing 
+com.android.build.gradle.tasks.Ve
+rifyLibraryResourcesTask$Action
+[        ] 	at org.gradle.interna
+l.work.DefaultAsyncWorkTracker.la
+mbda$waitForItemsAndGatherFailure
+s$2(DefaultAsyncWorkTracker.java:
+130)
+[        ] 	at org.gradle.interna
+l.work.DefaultAsyncWorkTracker.wa
+itForItemsAndGatherFailures(Defau
+ltAsyncWorkTracker.java:126)
+[        ] 	at org.gradle.interna
+l.work.DefaultAsyncWorkTracker.wa
+itForItemsAndGatherFailures(Defau
+ltAsyncWorkTracker.java:92)
+[        ] 	at org.gradle.api.int
+ernal.tasks.execution.CatchExcept
+ionTaskExecuter.execute(CatchExce
+ptionTaskExecuter.java:36)
+[        ] 	at org.gradle.interna
+l.concurrent.ExecutorPolicy$Catch
+AndRecordFailures.onExecute(Execu
+torPolicy.java:64)
+[        ] Caused by: com.android
+.builder.internal.aapt.v2.Aapt2Ex
+ception: Android resource 
+linking failed
+[        ] ERROR: C:\Users\mmeyd\
+AndroidStudioProjects\E-Posyandu 
+Flutter\build\isar_flutter_libs\i
+ntermediates\merged_res\release\m
+ergeReleaseResources\values\value
+s.xml:194: AAPT: error: resource 
+android:attr/lStar not found.
+[        ] 	at com.android.builde
+r.internal.aapt.v2.Aapt2Exception
+$Companion.create(Aapt2Exception.
+kt:45)
+[        ] 	at com.android.builde
+r.internal.aapt.v2.Aapt2Exception
+$Companion.create$default(Aapt2Ex
+ception.kt:31)
+[        ] 	at com.android.build.
+gradle.internal.res.Aapt2ErrorUti
+ls.rewriteException(Aapt2ErrorUti
+ls.kt:262)
+[        ] 	at com.android.build.
+gradle.internal.res.Aapt2ErrorUti
+ls.rewriteLinkException(Aapt2Erro
+rUtils.kt:133)
+[        ] BUILD FAILED in 8s
+[  +74 ms] Gradle task 
+assembleRelease failed with exit 
+code 1
+System.Management.Automation.Remo
+teException
+System.Management.Automation.Remo
+teException
+
+

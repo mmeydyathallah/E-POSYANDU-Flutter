@@ -1,0 +1,8 @@
+create_project
+get_project
+list_projects
+list_screens
+get_screen
+generate_screen_from_text
+edit_screens
+generate_variants

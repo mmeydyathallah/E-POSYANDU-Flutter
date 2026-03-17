@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#11d469",
+                        "background-light": "#EAF9E7",
+                        "background-dark": "#102218",
+                        "card-glass": "rgba(255, 255, 255, 0.7)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-effect {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen pb-24">
+<!-- Header Section -->
+<header class="flex items-center justify-between p-6 bg-transparent">
+<div class="flex items-center gap-3">
+<div class="size-12 rounded-full border-2 border-primary p-0.5 overflow-hidden">
+<img alt="Nurse Sarah Profile" class="w-full h-full object-cover rounded-full" data-alt="Professional portrait of a female nurse Sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-Q-4Q-M9TByuc0S2KVkEqF2vcsWk207Px4d-KNaR8kACpeU-OWsp_QAj8x9nmxFIoJVF5CSuCdGIEO-wgNdGSqWEJQMUR3VkLqFg15P9e9fviH0P_GeAZ_DvN_ftMDdWV1ADyr_-A1VBe7pr4q0D8xXohiAVVA7uAC8Mn5BAh5_JB34paY0VGAm14b4CmnYMYX_vX1Ogz56Vvxhwkloh7OlWqK3VST_a8wXAcjdERcASdmWLR2J8kg8sXoUQfvQIZpPsMcKAhfDg"/>
+</div>
+<div>
+<h1 class="text-slate-900 dark:text-slate-100 font-bold text-lg leading-tight">Nurse Sarah</h1>
+<p class="text-primary font-medium text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+                    Puskesmas Melati
+                </p>
+</div>
+</div>
+<button class="relative bg-white/80 dark:bg-slate-800/80 p-2.5 rounded-full glass-effect shadow-sm">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-200">notifications</span>
+<span class="absolute top-2 right-2.5 size-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="px-6 space-y-8">
+<!-- Welcome Section -->
+<section class="space-y-1">
+<h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Posyandu Dashboard</h2>
+<p class="text-slate-500 dark:text-slate-400">Ready for today's toddler checkups?</p>
+</section>
+<!-- IoT Real-time Monitoring Section -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-500">Live IoT Status</h3>
+<span class="flex items-center gap-1 text-[10px] bg-primary/20 text-primary px-2 py-1 rounded-full font-bold">
+<span class="size-1.5 bg-primary rounded-full animate-pulse"></span>
+                    ONLINE
+                </span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Weight Card -->
+<div class="glass-effect bg-white/60 dark:bg-slate-800/40 p-5 rounded-xl space-y-3 shadow-sm">
+<div class="bg-primary/10 size-10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">monitor_weight</span>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Current Weight</p>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-bold text-slate-900 dark:text-slate-100">12.5</span>
+<span class="text-slate-500 text-sm">kg</span>
+</div>
+</div>
+<div class="h-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/3"></div>
+</div>
+</div>
+<!-- Height Card -->
+<div class="glass-effect bg-white/60 dark:bg-slate-800/40 p-5 rounded-xl space-y-3 shadow-sm">
+<div class="bg-primary/10 size-10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">straighten</span>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Current Height</p>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-bold text-slate-900 dark:text-slate-100">85.2</span>
+<span class="text-slate-500 text-sm">cm</span>
+</div>
+</div>
+<div class="h-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-4/5"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Activity Feed -->
+<section class="space-y-4">
+<div class="flex items-center justify-between px-1">
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Recent Checkups</h3>
+<button class="text-primary text-sm font-semibold">View All</button>
+</div>
+<div class="space-y-3">
+<!-- Activity Item 1 -->
+<div class="flex items-center gap-4 bg-white/40 dark:bg-slate-800/20 p-4 rounded-xl glass-effect border-white/20">
+<div class="size-12 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Toddler Profile" class="w-full h-full object-cover" data-alt="Cute toddler face profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7N3If-c6LG4WEcx9zIOfzOR_cnq-uv2PBuEO35e_489vHK0hopsj3bB-Q_rrQ-sT998HIW4Me5j1iOCk8p1pjWd_uqlkiORfanmL44E2IRUF69VtVXaEBvjeHz44Taem-Hdrh2hlB1taYN9feEiRsQDvr9lfqhMKtJ2ubtEb7ZlUsr3JBSg5FTrm9tw8hLpDudoPkKgZrLpDTpzLJJkZFHv1wRSABTPH6IwqDq9L-WTcCpgINzIZd1QNgGIAx411tKtNcmMyyNQU"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm">Aditya Pratama</h4>
+<p class="text-slate-500 text-xs">Today, 09:45 AM</p>
+</div>
+<div class="text-right">
+<span class="text-primary text-xs font-bold block">Normal</span>
+<span class="text-slate-400 text-[10px]">Growth Tier A</span>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="flex items-center gap-4 bg-white/40 dark:bg-slate-800/20 p-4 rounded-xl glass-effect border-white/20">
+<div class="size-12 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Toddler Profile" class="w-full h-full object-cover" data-alt="Happy young child profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIncVFif47aGOmZ1zJI5Z68gJkW-KYObZH50gUO5D_PFkZdBsrjUWlDbqEtLdyBH5hmLbi9wiSut5S9N2X_Ch9txZCPgKgUIwwzI81Af0l7yY52u_SPQxgPA7tcIfnHFsOirX40AG8HIx1yMF4OMXBOuVnYtL4g7GjCrVF-VtADe94vkAuUxCn1th1zNSam9glTV4IkVkgTOgwJKJv7miaQthH4z0EM6fv0EyIulQpUgN4A5ijhCyPkiG9sMj_5ZkSgnXQS3EAxEA"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm">Siti Aminah</h4>
+<p class="text-slate-500 text-xs">Today, 09:12 AM</p>
+</div>
+<div class="text-right">
+<span class="text-orange-500 text-xs font-bold block">Warning</span>
+<span class="text-slate-400 text-[10px]">Underweight</span>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="flex items-center gap-4 bg-white/40 dark:bg-slate-800/20 p-4 rounded-xl glass-effect border-white/20">
+<div class="size-12 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Toddler Profile" class="w-full h-full object-cover" data-alt="Little boy profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0n2VStRxC92bFu2lv4yQIXY-OkOZ7nTEm3p-68kTIGxBgY1N-4WlXqrc4SsJF5pN5Sm85v1QvUAbsjPf8X33A1ZJ-bEbRa7BZLU5FG9VIu4TPhMJ2EaQgTGuB8GOSBh5Tu-siS6f5n1jLt_DPFDqD4qLjVk-fFInm4ZoWh5X8aD8FCWeQ4XgUbxKU0hxM2p1KkBnAUCb4ElBgB48UxmePHOMx6qNv_LkvB6MHhx6P0OmM_tcR5iyCtQ4qEzHecSl8IaPpTTrpj5s"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm">Budi Hartono</h4>
+<p class="text-slate-500 text-xs">Yesterday, 04:30 PM</p>
+</div>
+<div class="text-right">
+<span class="text-primary text-xs font-bold block">Normal</span>
+<span class="text-slate-400 text-[10px]">Growth Tier B</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Bottom Navigation -->
+<nav class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50">
+<div class="relative flex items-center justify-between px-6 py-3 bg-[#013237]/80 backdrop-blur-2xl rounded-[2rem] border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center gap-1 group" href="#">
+<div class="relative">
+<span class="material-symbols-outlined text-[#11d469] text-3xl transition-all duration-300 drop-shadow-[0_0_8px_rgba(17,212,105,0.8)]" style="font-variation-settings: 'FILL' 1">home</span>
+</div>
+<span class="text-[10px] font-bold text-[#11d469]">Home</span>
+</a>
+<!-- Data -->
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-white transition-colors">database</span>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-white">Data</span>
+</a>
+<!-- Central FAB (Input) -->
+<div class="relative -top-10">
+<button class="bg-[#11d469] size-16 rounded-full flex items-center justify-center text-[#013237] shadow-[0_0_25px_rgba(17,212,105,0.6)] border-4 border-[#013237] hover:scale-110 active:scale-95 transition-all duration-300">
+<span class="material-symbols-outlined text-3xl font-bold">add</span>
+</button>
+<span class="absolute -bottom-7 left-1/2 -translate-x-1/2 text-[10px] font-bold text-white uppercase tracking-wider">Input</span>
+</div>
+<!-- Growth -->
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-white transition-colors">monitoring</span>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-white">Growth</span>
+</a>
+<!-- Export -->
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-white transition-colors">ios_share</span>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-white">Export</span>
+</a>
+</div>
+</nav>
+</body></html>
