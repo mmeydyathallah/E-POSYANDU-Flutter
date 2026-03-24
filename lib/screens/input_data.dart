@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../models/models.dart';
@@ -8,46 +9,10 @@ import '../services/ble_service.dart';
 import '../services/isar_service.dart';
 import '../widgets/modern_notification.dart';
 
-// WHO reference logic to ensure data consistency
-const Map<int, List<double>> _whoBoysW = {
-  0: [2.5, 3.3, 4.4],
-  3: [4.4, 6.0, 7.8],
-  6: [6.0, 7.9, 9.8],
-  9: [7.1, 9.2, 11.4],
-  12: [7.8, 10.2, 12.5],
-  15: [8.4, 11.0, 13.5],
-  18: [8.8, 11.6, 14.2],
-  21: [9.2, 12.2, 14.9],
-  24: [9.7, 12.9, 15.7],
-  27: [10.0, 13.5, 16.5],
-  30: [10.4, 14.0, 17.2],
-  36: [11.0, 15.0, 18.4],
-  42: [11.6, 16.0, 19.7],
-  48: [12.1, 16.9, 20.8],
-  54: [12.7, 17.8, 21.9],
-  60: [13.1, 18.7, 23.1],
-};
-const Map<int, List<double>> _whoGirlsW = {
-  0: [2.4, 3.2, 4.2],
-  3: [4.2, 5.7, 7.4],
-  6: [5.7, 7.5, 9.4],
-  9: [6.8, 8.9, 11.1],
-  12: [7.3, 9.7, 12.1],
-  15: [7.8, 10.5, 13.0],
-  18: [8.2, 11.0, 13.7],
-  21: [8.7, 11.6, 14.4],
-  24: [9.1, 12.2, 15.2],
-  27: [9.5, 12.8, 16.0],
-  30: [9.9, 13.4, 16.7],
-  36: [10.5, 14.3, 17.9],
-  42: [11.1, 15.2, 19.0],
-  48: [11.6, 16.0, 20.1],
-  54: [12.1, 16.9, 21.2],
-  60: [12.7, 17.7, 22.2],
-};
+import '../utils/kms_helper.dart';
 
 class InputDataScreen extends StatefulWidget {
-  const InputDataScreen({Key? key}) : super(key: key);
+  const InputDataScreen({super.key});
 
   @override
   State<InputDataScreen> createState() => _InputDataScreenState();
@@ -58,6 +23,7 @@ class _InputDataScreenState extends State<InputDataScreen> {
   int? _selectedBalitaId;
   List<Balita> _listBalita = [];
   StreamSubscription<List<Balita>>? _sub;
+  StreamSubscription<String>? _bleSub;
 
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -78,34 +44,83 @@ class _InputDataScreenState extends State<InputDataScreen> {
   @override
   void initState() {
     super.initState();
-    _sub = IsarService().watchAllBalita().listen((list) {
-      if (mounted) {
-        setState(() {
-          _listBalita = list;
-          if (_selectedBalitaId != null &&
-              !list.any((b) => b.id == _selectedBalitaId)) {
-            _selectedBalitaId = null;
-          }
-        });
-      }
-    });
-    _bleService.sensorDataStream.listen((dataString) {
-      if (mounted) {
+
+    // 1. GUARANTEED BLE REGISTRATION
+    try {
+      bool _hasShownSnackbar = false;
+      void processDataString(String dataString) {
+        if (!mounted) return;
         try {
           final parts = dataString.split(',');
           if (parts.length >= 2) {
-            setState(() {
-              _currentWeight = double.parse(parts[0]);
-              _currentHeight = double.parse(parts[1]);
-            });
+            double? w = double.tryParse(parts[0]);
+            double? h = double.tryParse(parts[1]);
+
+            print("BLE UI_LISTENER: Parsed -> w=$w, h=$h");
+
+            if (w != null && h != null) {
+              setState(() {
+                _currentWeight = w;
+                _currentHeight = h;
+              });
+              print("BLE UI_LISTENER: ⭐ SETSTATE CALLED! UI WILL REBUILD! ⭐");
+
+              if (!_hasShownSnackbar) {
+                _hasShownSnackbar = true;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('BLE Data Mendarat! Berat: $w, Tinggi: $h'),
+                  ),
+                );
+              }
+            }
           }
-        } catch (_) {}
+        } catch (e) {
+          print("BLE UI_LISTENER: Error -> $e");
+        }
       }
-    });
+
+      if (_bleService.lastData != null) {
+        print(
+          "BLE UI_LISTENER: Found cached lastData -> ${_bleService.lastData}",
+        );
+        processDataString(_bleService.lastData!);
+      }
+
+      _bleSub = _bleService.sensorDataStream.listen((dataString) {
+        print("BLE UI_LISTENER: Received -> $dataString");
+        processDataString(dataString);
+      });
+      print("BLE UI_LISTENER: ✅ Successfully registered BLE Data Stream.");
+    } catch (e) {
+      print("BLE UI_LISTENER: CRITICAL ERROR IN BLE INIT: $e");
+    }
+
+    // 2. ISAR REGISTRATION
+    try {
+      _sub = IsarService().watchAllBalita().listen((list) {
+        if (mounted) {
+          setState(() {
+            _listBalita = list;
+            if (_selectedBalitaId != null &&
+                !list.any((b) => b.id == _selectedBalitaId)) {
+              _selectedBalitaId = null;
+            }
+          });
+        }
+      });
+    } catch (e) {
+      print("ISAR ERROR in InputDataScreen: $e");
+    }
+  }
+
+  String _formatDecimal(double val) {
+    return val.toStringAsFixed(1).replaceAll('.', ',');
   }
 
   @override
   void dispose() {
+    _bleSub?.cancel();
     _sub?.cancel();
     _bleService.disconnect();
     _searchController.dispose();
@@ -125,28 +140,10 @@ class _InputDataScreenState extends State<InputDataScreen> {
       tinggi: _currentHeight,
     );
 
-    // Calculate status directly for consistency
-    final isGirl = _selectedBalita!.jenisKelamin == 'P';
-    final whoRef = isGirl ? _whoGirlsW : _whoBoysW;
-    final ages = whoRef.keys.toList()..sort();
-
-    int ageIdx = ages.first;
-    double minDiff = double.maxFinite;
-    for (int a in ages) {
-      double diff = (a - (_selectedBalita!.usia ?? 0)).abs().toDouble();
-      if (diff < minDiff) {
-        minDiff = diff;
-        ageIdx = a;
-      }
-    }
-    final ref = whoRef[ageIdx]!;
-
-    String status = 'Sehat';
-    if (_currentWeight < ref[0])
-      status = 'Berat Rendah';
-    else if (_currentWeight > ref[2])
-      status = 'Berat Lebih';
-
+    String status = KmsHelper.calculateDbStatus(
+      _selectedBalita!,
+      overrideWeight: _currentWeight,
+    );
     _selectedBalita!.keterangan = status;
     await IsarService().addRiwayat(_selectedBalita!, riwayat);
 
@@ -191,10 +188,9 @@ class _InputDataScreenState extends State<InputDataScreen> {
               currentIndex: _currentIndex,
               onTap: (index) {
                 if (_currentIndex == index) return;
-                setState(() => _currentIndex = index);
                 switch (index) {
                   case 0:
-                    Navigator.pushReplacementNamed(context, '/');
+                    Navigator.popUntil(context, ModalRoute.withName('/'));
                     break;
                   case 1:
                     Navigator.pushReplacementNamed(context, '/toddler_data');
@@ -286,26 +282,34 @@ class _InputDataScreenState extends State<InputDataScreen> {
                   letterSpacing: 1.2,
                 ),
               ),
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: AppTheme.primary,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  const Text(
-                    'CONNECTED',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primary,
-                    ),
-                  ),
-                ],
+              StreamBuilder<BluetoothConnectionState>(
+                stream: _bleService.connectionStateStream,
+                initialData: BluetoothConnectionState.disconnected,
+                builder: (context, snapshot) {
+                  final isConnected =
+                      snapshot.data == BluetoothConnectionState.connected;
+                  return Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: isConnected ? AppTheme.primary : Colors.grey,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        isConnected ? 'CONNECTED' : 'DISCONNECTED',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: isConnected ? AppTheme.primary : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -327,12 +331,34 @@ class _InputDataScreenState extends State<InputDataScreen> {
               child: Row(
                 children: [
                   Expanded(
-                    child: _buildSensorColumn(
-                      'Weight',
-                      'BLE V2',
-                      _currentWeight.toStringAsFixed(1),
-                      'kg',
-                      Icons.monitor_weight_outlined,
+                    child: Stack(
+                      children: [
+                        _buildSensorColumn(
+                          'Weight',
+                          'BLE V2',
+                          _formatDecimal(_currentWeight),
+                          'kg',
+                          Icons.monitor_weight_outlined,
+                        ),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: IconButton(
+                            onPressed: () {
+                              _bleService.sendCommand("tare");
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Mengirim perintah Tare...'),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.exposure_zero, size: 20),
+                            color: AppTheme.primary,
+                            tooltip: 'Reset Berat (Tare)',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   VerticalDivider(
@@ -344,7 +370,7 @@ class _InputDataScreenState extends State<InputDataScreen> {
                     child: _buildSensorColumn(
                       'Height',
                       'ULTRA V1',
-                      _currentHeight.toStringAsFixed(1),
+                      _formatDecimal(_currentHeight),
                       'cm',
                       Icons.straighten_outlined,
                     ),
@@ -545,7 +571,7 @@ class _InputDataScreenState extends State<InputDataScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '$_currentWeight kg',
+                                  '${_formatDecimal(_currentWeight)} kg',
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -554,7 +580,7 @@ class _InputDataScreenState extends State<InputDataScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Sblm: ${(_selectedBalita?.riwayat?.isNotEmpty ?? false) ? (_selectedBalita!.riwayat!.last.berat ?? 0.0) : 0.0} kg',
+                                  'Sblm: ${(_selectedBalita?.riwayat?.isNotEmpty ?? false) ? _formatDecimal(_selectedBalita!.riwayat!.last.berat ?? 0.0) : _formatDecimal(0.0)} kg',
                                   style: const TextStyle(
                                     fontSize: 10,
                                     color: Colors.white38,
@@ -582,7 +608,7 @@ class _InputDataScreenState extends State<InputDataScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '$_currentHeight cm',
+                                  '${_formatDecimal(_currentHeight)} cm',
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -591,7 +617,7 @@ class _InputDataScreenState extends State<InputDataScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Sblm: ${(_selectedBalita?.riwayat?.isNotEmpty ?? false) ? (_selectedBalita!.riwayat!.last.tinggi ?? 0.0) : 0.0} cm',
+                                  'Sblm: ${(_selectedBalita?.riwayat?.isNotEmpty ?? false) ? _formatDecimal(_selectedBalita!.riwayat!.last.tinggi ?? 0.0) : _formatDecimal(0.0)} cm',
                                   style: const TextStyle(
                                     fontSize: 10,
                                     color: Colors.white38,
@@ -610,8 +636,9 @@ class _InputDataScreenState extends State<InputDataScreen> {
                           : () {
                               setModalState(() => _isSaving = true);
                               _saveDataToIsar().then((_) {
-                                if (mounted)
+                                if (mounted) {
                                   setModalState(() => _isSaving = false);
+                                }
                               });
                             },
                       style: FilledButton.styleFrom(
@@ -716,27 +743,13 @@ class _InputDataScreenState extends State<InputDataScreen> {
             final isSelected = _selectedBalitaId == balita.id;
 
             // Calculate status for indicator
-            final isGirl = balita.jenisKelamin == 'P';
-            final whoRef = isGirl ? _whoGirlsW : _whoBoysW;
-            final ages = whoRef.keys.toList()..sort();
-            int ageIdx = ages.first;
-            double minDiff = double.maxFinite;
-            for (int a in ages) {
-              double diff = (a - (balita.usia ?? 0)).abs().toDouble();
-              if (diff < minDiff) {
-                minDiff = diff;
-                ageIdx = a;
-              }
-            }
-            final ref = whoRef[ageIdx]!;
-
+            final String ds = balita.displayStatus;
             Color statusColor = AppTheme.primary;
-            if (balita.berat != null && balita.berat! > 0) {
-              if (balita.berat! < ref[0])
-                statusColor = AppTheme.statusDanger;
-              else if (balita.berat! > ref[2])
-                statusColor = AppTheme.statusWarning;
-            } else {
+            if (ds == 'Kurang Optimal') {
+              statusColor = AppTheme.statusDanger;
+            } else if (ds == 'Berlebih') {
+              statusColor = AppTheme.statusWarning;
+            } else if (ds == 'Data Kosong' || ds == '-') {
               statusColor = Colors.grey;
             }
 

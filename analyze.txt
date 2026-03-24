@@ -1,0 +1,7 @@
+﻿Analyzing splash_screen.dart...                                 
+
+   info - Parameter 'key' could be a super parameter - lib\screens\splash_screen.dart:7:9 - use_super_parameters
+   info - Unnecessary use of multiple underscores - lib\screens\splash_screen.dart:63:30 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\splash_screen.dart:63:34 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\splash_screen.dart:64:48 - unnecessary_underscores
+

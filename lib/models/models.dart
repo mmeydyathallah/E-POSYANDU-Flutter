@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import '../utils/kms_helper.dart';
 
 part 'models.g.dart';
 
@@ -101,6 +102,10 @@ class Balita {
       'jenisKelamin': jenisKelamin,
       'tanggalLahir': tanggalLahir,
     };
+  }
+
+  String get displayStatus {
+    return KmsHelper.getLiveDisplayStatus(this);
   }
 }
 

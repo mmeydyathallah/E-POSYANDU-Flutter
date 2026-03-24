@@ -9,43 +9,7 @@ import '../services/isar_service.dart';
 import '../services/ble_service.dart';
 import '../widgets/modern_notification.dart';
 
-// WHO Weight-for-Age reference (boys & girls, 0-60 months)
-const Map<int, List<double>> _whoBoysW = {
-  0: [2.5, 3.3, 4.4],
-  3: [4.4, 6.0, 7.8],
-  6: [6.0, 7.9, 9.8],
-  9: [7.1, 9.2, 11.4],
-  12: [7.8, 10.2, 12.5],
-  15: [8.4, 11.0, 13.5],
-  18: [8.8, 11.6, 14.2],
-  21: [9.2, 12.2, 14.9],
-  24: [9.7, 12.9, 15.7],
-  27: [10.0, 13.5, 16.5],
-  30: [10.4, 14.0, 17.2],
-  36: [11.0, 15.0, 18.4],
-  42: [11.6, 16.0, 19.7],
-  48: [12.1, 16.9, 20.8],
-  54: [12.7, 17.8, 21.9],
-  60: [13.1, 18.7, 23.1],
-};
-const Map<int, List<double>> _whoGirlsW = {
-  0: [2.4, 3.2, 4.2],
-  3: [4.2, 5.7, 7.4],
-  6: [5.7, 7.5, 9.4],
-  9: [6.8, 8.9, 11.1],
-  12: [7.3, 9.7, 12.1],
-  15: [7.8, 10.5, 13.0],
-  18: [8.2, 11.0, 13.7],
-  21: [8.7, 11.6, 14.4],
-  24: [9.1, 12.2, 15.2],
-  27: [9.5, 12.8, 16.0],
-  30: [9.9, 13.4, 16.7],
-  36: [10.5, 14.3, 17.9],
-  42: [11.1, 15.2, 19.0],
-  48: [11.6, 16.0, 20.1],
-  54: [12.1, 16.9, 21.2],
-  60: [12.7, 17.7, 22.2],
-};
+import '../utils/kms_helper.dart';
 
 class GrowthTrackerScreen extends StatefulWidget {
   const GrowthTrackerScreen({Key? key}) : super(key: key);
@@ -82,28 +46,35 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
         });
       }
     });
-    _sensorSub = _bleService.sensorDataStream.listen((rawData) {
-      if (mounted) {
-        try {
-          final parts = rawData.split(',');
-          for (var part in parts) {
-            final kv = part.split(':');
-            if (kv.length == 2) {
-              if (kv[0].trim() == 'BERAT')
-                setState(
-                  () => _currentSensorWeight =
-                      double.tryParse(kv[1].trim()) ?? _currentSensorWeight,
-                );
-              else if (kv[0].trim() == 'TINGGI')
-                setState(
-                  () => _currentSensorHeight =
-                      double.tryParse(kv[1].trim()) ?? _currentSensorHeight,
-                );
-            }
+    void processData(String rawData) {
+      if (!mounted) return;
+      try {
+        final parts = rawData.split(',');
+        if (parts.length >= 2) {
+          double? w = double.tryParse(parts[0]);
+          double? h = double.tryParse(parts[1]);
+
+          if (w != null && h != null) {
+            setState(() {
+              _currentSensorWeight = w;
+              _currentSensorHeight = h;
+            });
           }
-        } catch (_) {}
-      }
+        }
+      } catch (_) {}
+    }
+
+    if (_bleService.lastData != null) {
+      processData(_bleService.lastData!);
+    }
+
+    _sensorSub = _bleService.sensorDataStream.listen((rawData) {
+      processData(rawData);
     });
+  }
+
+  String _formatDecimal(double val) {
+    return val.toStringAsFixed(1).replaceAll('.', ',');
   }
 
   @override
@@ -123,22 +94,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
         builder: (context, setModalState) => StreamBuilder<String>(
           stream: _bleService.sensorDataStream,
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              try {
-                final parts = snapshot.data!.split(',');
-                for (var part in parts) {
-                  final kv = part.split(':');
-                  if (kv.length == 2) {
-                    if (kv[0].trim() == 'BERAT')
-                      _currentSensorWeight =
-                          double.tryParse(kv[1].trim()) ?? _currentSensorWeight;
-                    if (kv[0].trim() == 'TINGGI')
-                      _currentSensorHeight =
-                          double.tryParse(kv[1].trim()) ?? _currentSensorHeight;
-                  }
-                }
-              } catch (_) {}
-            }
+            // Already handled by sensorDataStream.listen in initState
             return Container(
               padding: const EdgeInsets.all(24),
               decoration: const BoxDecoration(
@@ -218,14 +174,14 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                       children: [
                         _buildLiveCard(
                           'BERAT',
-                          _currentSensorWeight.toStringAsFixed(1),
+                          _formatDecimal(_currentSensorWeight),
                           'kg',
                           Icons.monitor_weight_outlined,
                         ),
                         const SizedBox(width: 16),
                         _buildLiveCard(
                           'TINGGI',
-                          _currentSensorHeight.toStringAsFixed(1),
+                          _formatDecimal(_currentSensorHeight),
                           'cm',
                           Icons.straighten_outlined,
                         ),
@@ -356,29 +312,9 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
       tinggi: _currentSensorHeight,
     );
 
-    // Sync status gizi (keterangan) based on WHO
-    final isGirl = _selected!.jenisKelamin == 'P';
-    final whoRef = isGirl ? _whoGirlsW : _whoBoysW;
-    final ages = whoRef.keys.toList()..sort();
-
-    // Unify logic: use closest age key
-    int ageIdx = ages.first;
-    double minDiff = double.maxFinite;
-    for (int a in ages) {
-      double diff = (a - (_selected!.usia ?? 0)).abs().toDouble();
-      if (diff < minDiff) {
-        minDiff = diff;
-        ageIdx = a;
-      }
-    }
-    final ref = whoRef[ageIdx]!; // [minus2SD, median, plus2SD]
-
-    String status = 'Sehat';
-    if (_currentSensorWeight < ref[0])
-      status = 'Berat Rendah';
-    else if (_currentSensorWeight > ref[2])
-      status = 'Berat Lebih';
-
+    _selected!.berat = _currentSensorWeight;
+    _selected!.tinggi = _currentSensorHeight;
+    String status = KmsHelper.calculateDbStatus(_selected!);
     _selected!.keterangan = status;
     _selected!.berat = _currentSensorWeight;
     _selected!.tinggi = _currentSensorHeight;
@@ -386,15 +322,9 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
     await IsarService().addRiwayat(_selected!, riwayat);
 
     if (mounted) {
-      String statusLabel = 'Optimal';
-      if (status == 'Berat Rendah')
-        statusLabel = 'Kurang Optimal';
-      else if (status == 'Berat Lebih')
-        statusLabel = 'Berlebih';
-
       ModernNotification.show(
         context,
-        'Data ${_selected!.nama} disimpan. Status: $statusLabel',
+        'Data ${_selected!.nama} disimpan. Status: ${_selected!.displayStatus}',
       );
     }
   }
@@ -434,9 +364,8 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
               currentIndex: _currentIndex,
               onTap: (index) {
                 if (_currentIndex == index) return;
-                setState(() => _currentIndex = index);
                 if (index == 0)
-                  Navigator.pushReplacementNamed(context, '/');
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
                 else if (index == 1)
                   Navigator.pushReplacementNamed(context, '/toddler_data');
                 else if (index == 3)
@@ -633,6 +562,8 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _buildIdentityCard(),
+        const SizedBox(height: 16),
         _buildCurrentStats(),
         const SizedBox(height: 20),
         _buildKmsChartSection(),
@@ -646,6 +577,71 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
     );
   }
 
+  Widget _buildIdentityCard() {
+    if (_selected == null) return const SizedBox();
+    final bool isGirl = _selected!.jenisKelamin == 'P';
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade100),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: isGirl ? Colors.pink.shade50 : Colors.blue.shade50,
+                image:
+                    (_selected!.fotoProfile != null &&
+                        _selected!.fotoProfile!.isNotEmpty)
+                    ? DecorationImage(
+                        image: FileImage(File(_selected!.fotoProfile!)),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+              ),
+              child:
+                  (_selected!.fotoProfile == null ||
+                      _selected!.fotoProfile!.isEmpty)
+                  ? Icon(
+                      Icons.child_care,
+                      color: isGirl ? Colors.pink : Colors.blue,
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _selected!.nama ?? '-',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${_selected!.usia ?? 0} Bulan · ${isGirl ? 'Perempuan' : 'Laki-laki'}',
+                    style: const TextStyle(fontSize: 13, color: Colors.black54),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildCurrentStats() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -654,7 +650,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
           Expanded(
             child: _buildStatCard(
               'Berat Badan',
-              '${_selected!.berat ?? 0.0} kg',
+              '${_formatDecimal(_selected!.berat ?? 0.0)} kg',
               Icons.monitor_weight_outlined,
             ),
           ),
@@ -662,7 +658,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
           Expanded(
             child: _buildStatCard(
               'Tinggi Badan',
-              '${_selected!.tinggi ?? 0.0} cm',
+              '${_formatDecimal(_selected!.tinggi ?? 0.0)} cm',
               Icons.straighten_outlined,
             ),
           ),
@@ -786,7 +782,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                   : CustomPaint(
                       painter: _KmsChartPainter(
                         riwayat: riwayat ?? [],
-                        whoRef: isGirl ? _whoGirlsW : _whoBoysW,
+                        whoRef: KmsHelper.getReference(isGirl ? 'P' : 'L'),
                         showWeight: _showWeight,
                       ),
                       child: const SizedBox.expand(),
@@ -1024,41 +1020,8 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   }
 
   Widget _buildRecommendationsSection() {
-    // Re-calculate status directly from current weight to ensure accuracy
-    final double weight = _selected!.berat ?? 0.0;
-    final int age = _selected!.usia ?? 0;
-    final bool isGirl = _selected!.jenisKelamin == 'P';
-    final whoRef = isGirl ? _whoGirlsW : _whoBoysW;
-    final ages = whoRef.keys.toList()..sort();
-
-    // Find the closest age key in the WHO reference map
-    int ageIdx = ages.first;
-    double minDiff = double.maxFinite;
-    for (int a in ages) {
-      double diff = (a - age).abs().toDouble();
-      if (diff < minDiff) {
-        minDiff = diff;
-        ageIdx = a;
-      }
-    }
-    final ref = whoRef[ageIdx]!; // [minus2SD, median, plus2SD]
-
-    String keterangan = 'Sehat';
-    final bool hasRiwayat =
-        _selected!.riwayat != null && _selected!.riwayat!.isNotEmpty;
-
-    if (!hasRiwayat && weight <= 0) {
-      keterangan = 'Data Kosong';
-    } else {
-      // 0 kg should be treated as 'Berat Rendah' (Nutrisi Kurang Optimal)
-      if (weight <= 0.01 || weight < ref[0]) {
-        keterangan = 'Berat Rendah';
-      } else if (weight > ref[2]) {
-        keterangan = 'Berat Lebih';
-      } else {
-        keterangan = 'Sehat';
-      }
-    }
+    // Use Helper for computing WHO status
+    String keterangan = KmsHelper.calculateDbStatus(_selected!);
 
     String detailRec = '';
     Color recColor = AppTheme.primary;

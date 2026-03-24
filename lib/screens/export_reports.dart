@@ -1,14 +1,13 @@
 import 'dart:io';
+import 'package:excel/excel.dart' as xl;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:csv/csv.dart';
 import 'package:share_plus/share_plus.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
-import '../models/models.dart';
 import '../services/isar_service.dart';
 import '../widgets/modern_notification.dart';
 
@@ -93,7 +92,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                   '${b.usia ?? 0} Bln',
                   (r.berat ?? 0.0).toStringAsFixed(1),
                   (r.tinggi ?? 0.0).toStringAsFixed(1),
-                  b.keterangan ?? '-',
+                  b.displayStatus,
                 ]);
                 no++;
               }
@@ -232,7 +231,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                                     r.tanggal ?? '-',
                                     (r.berat ?? 0.0).toStringAsFixed(1),
                                     (r.tinggi ?? 0.0).toStringAsFixed(1),
-                                    b.keterangan ?? '-',
+                                    b.displayStatus,
                                   ],
                                 )
                                 .toList(),
@@ -354,33 +353,122 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
     );
   }
 
-  Future<void> _exportToCSV() async {
+  // ── Helpers for Excel cell styles ─────────────────────────────────────────
+  xl.CellStyle _xlHeader() => xl.CellStyle(
+    backgroundColorHex: xl.ExcelColor.fromHexString('#1B5E20'),
+    fontColorHex: xl.ExcelColor.fromHexString('#FFFFFF'),
+    bold: true,
+    fontSize: 10,
+    horizontalAlign: xl.HorizontalAlign.Center,
+    verticalAlign: xl.VerticalAlign.Center,
+    leftBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+    rightBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+    topBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+    bottomBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+  );
+
+  xl.CellStyle _xlData(bool isAlt) => xl.CellStyle(
+    backgroundColorHex: isAlt
+        ? xl.ExcelColor.fromHexString('#F5F5F5')
+        : xl.ExcelColor.fromHexString('#FFFFFF'),
+    fontSize: 9,
+    leftBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+    rightBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+    topBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+    bottomBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+  );
+
+  xl.CellStyle _xlTitle() => xl.CellStyle(
+    bold: true,
+    fontSize: 14,
+    fontColorHex: xl.ExcelColor.fromHexString('#1B5E20'),
+  );
+
+  xl.CellStyle _xlSubHeader() => xl.CellStyle(
+    bold: true,
+    fontSize: 10,
+    backgroundColorHex: xl.ExcelColor.fromHexString('#E8F5E9'),
+    leftBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+    rightBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+    topBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+    bottomBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+  );
+
+  void _xlCell(
+    xl.Sheet sheet,
+    int row,
+    int col,
+    String value,
+    xl.CellStyle style,
+  ) {
+    final cell = sheet.cell(
+      xl.CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row),
+    );
+    cell.value = xl.TextCellValue(value);
+    cell.cellStyle = style;
+  }
+
+  Future<void> _exportToExcel() async {
     setState(() => _isExporting = true);
     try {
       final balitas = await IsarService().getAllBalita();
-      List<List<dynamic>> rows = [
-        ['REKAPITULASI DATA POSYANDU DIGITAL'],
-        [
-          'Periode',
-          '${_selectedDateRange!.start.day}/${_selectedDateRange!.start.month}/${_selectedDateRange!.start.year} - ${_selectedDateRange!.end.day}/${_selectedDateRange!.end.month}/${_selectedDateRange!.end.year}',
-        ],
-        [
-          'Tipe Laporan',
-          _reportType == 0 ? 'Kunjungan Harian' : 'Daftar Master Balita',
-        ],
-        [],
-        [
+      final periodStr =
+          '${_selectedDateRange!.start.day}/${_selectedDateRange!.start.month}/${_selectedDateRange!.start.year}'
+          ' - '
+          '${_selectedDateRange!.end.day}/${_selectedDateRange!.end.month}/${_selectedDateRange!.end.year}';
+
+      final excel = xl.Excel.createExcel();
+      excel.delete('Sheet1');
+
+      if (_reportType == 0) {
+        // ── Rekap Kunjungan Harian ─────────────────────────────────────────
+        final sheet = excel['Kunjungan Harian'];
+
+        // Merge title across 8 columns
+        sheet.merge(
+          xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0),
+          xl.CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 0),
+        );
+        final titleCell = sheet.cell(
+          xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0),
+        );
+        titleCell.value = xl.TextCellValue(
+          'LAPORAN KUNJUNGAN HARIAN — SISTEM DIGITAL E-POSYANDU',
+        );
+        titleCell.cellStyle = _xlTitle();
+
+        sheet.merge(
+          xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 1),
+          xl.CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 1),
+        );
+        final subCell = sheet.cell(
+          xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 1),
+        );
+        subCell.value = xl.TextCellValue(
+          'Puskesmas Kab. Pasuruan   |   Periode: $periodStr',
+        );
+        subCell.cellStyle = xl.CellStyle(
+          fontSize: 9,
+          fontColorHex: xl.ExcelColor.fromHexString('#555555'),
+        );
+
+        // Header row at row index 3
+        const headers = [
           'No',
           'Tanggal',
           'Nama Balita',
           'JK',
-          'Usia (Bulan)',
-          'Berat (kg)',
-          'Tinggi (cm)',
+          'Usia',
+          'BB (kg)',
+          'TB (cm)',
           'Status',
-        ],
-      ];
-      if (_reportType == 0) {
+        ];
+        for (int c = 0; c < headers.length; c++) {
+          _xlCell(sheet, 3, c, headers[c], _xlHeader());
+        }
+
+        // Data rows
+        int rowIdx = 4;
         int no = 1;
         for (var b in balitas) {
           if (b.riwayat == null) continue;
@@ -388,65 +476,209 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
             if (r.tanggal == null) continue;
             try {
               DateTime dt = DateTime.parse(r.tanggal!);
-              if (dt.isAfter(
-                    _selectedDateRange!.start.subtract(const Duration(days: 1)),
-                  ) &&
-                  dt.isBefore(
-                    _selectedDateRange!.end.add(const Duration(days: 1)),
-                  )) {
-                rows.add([
-                  no,
+              DateTime checkDate = DateTime(dt.year, dt.month, dt.day);
+              DateTime startDate = DateTime(
+                _selectedDateRange!.start.year,
+                _selectedDateRange!.start.month,
+                _selectedDateRange!.start.day,
+              );
+              DateTime endDate = DateTime(
+                _selectedDateRange!.end.year,
+                _selectedDateRange!.end.month,
+                _selectedDateRange!.end.day,
+              );
+              if ((checkDate.isAfter(startDate) ||
+                      checkDate.isAtSameMomentAs(startDate)) &&
+                  (checkDate.isBefore(endDate) ||
+                      checkDate.isAtSameMomentAs(endDate))) {
+                final ds = _xlData(rowIdx.isOdd);
+                final rowData = [
+                  no.toString(),
                   r.tanggal!,
                   b.nama ?? '-',
                   b.jenisKelamin ?? '-',
-                  b.usia ?? 0,
-                  r.berat ?? 0.0,
-                  r.tinggi ?? 0.0,
-                  b.keterangan ?? '-',
-                ]);
+                  '${b.usia ?? 0} Bln',
+                  (r.berat ?? 0.0).toStringAsFixed(1),
+                  (r.tinggi ?? 0.0).toStringAsFixed(1),
+                  b.displayStatus,
+                ];
+                for (int c = 0; c < rowData.length; c++) {
+                  _xlCell(sheet, rowIdx, c, rowData[c], ds);
+                }
+                rowIdx++;
                 no++;
               }
             } catch (_) {}
           }
         }
+
+        // Total row
+        rowIdx++;
+        final totalCell = sheet.cell(
+          xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: rowIdx),
+        );
+        totalCell.value = xl.TextCellValue('Total Data: ${no - 1} record');
+        totalCell.cellStyle = xl.CellStyle(bold: true, fontSize: 9);
+
+        // Column widths
+        sheet.setColumnWidth(0, 6);
+        sheet.setColumnWidth(1, 14);
+        sheet.setColumnWidth(2, 28);
+        sheet.setColumnWidth(3, 6);
+        sheet.setColumnWidth(4, 10);
+        sheet.setColumnWidth(5, 10);
+        sheet.setColumnWidth(6, 10);
+        sheet.setColumnWidth(7, 18);
       } else {
-        int no = 1;
+        // ── Daftar Master Balita ───────────────────────────────────────────
+        final sheet = excel['Daftar Master Balita'];
+
+        sheet.merge(
+          xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0),
+          xl.CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: 0),
+        );
+        final titleCell = sheet.cell(
+          xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0),
+        );
+        titleCell.value = xl.TextCellValue(
+          'DAFTAR MASTER & REKAP BALITA — SISTEM DIGITAL E-POSYANDU',
+        );
+        titleCell.cellStyle = _xlTitle();
+
+        sheet.merge(
+          xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 1),
+          xl.CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: 1),
+        );
+        final subCell = sheet.cell(
+          xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 1),
+        );
+        subCell.value = xl.TextCellValue(
+          'Puskesmas Kab. Pasuruan   |   Periode: $periodStr',
+        );
+        subCell.cellStyle = xl.CellStyle(
+          fontSize: 9,
+          fontColorHex: xl.ExcelColor.fromHexString('#555555'),
+        );
+
+        int rowIdx = 3;
+
         for (var b in balitas) {
-          rows.add([
-            no,
-            b.tanggalDaftar ?? '-',
-            b.nama ?? '-',
-            b.jenisKelamin ?? '-',
-            b.usia ?? 0,
-            b.berat ?? 0.0,
-            b.tinggi ?? 0.0,
-            b.keterangan ?? '-',
-          ]);
-          if (b.riwayat != null)
-            for (var r in b.riwayat!)
-              rows.add([
-                '',
-                '-> ${r.tanggal}',
-                'Rekap',
-                '',
-                '',
-                r.berat,
-                r.tinggi,
-                '',
-              ]);
-          no++;
+          // Name card header (full width, green background)
+          sheet.merge(
+            xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: rowIdx),
+            xl.CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: rowIdx),
+          );
+          final nameCell = sheet.cell(
+            xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: rowIdx),
+          );
+          nameCell.value = xl.TextCellValue((b.nama ?? '-').toUpperCase());
+          nameCell.cellStyle = xl.CellStyle(
+            backgroundColorHex: xl.ExcelColor.fromHexString('#1B5E20'),
+            fontColorHex: xl.ExcelColor.fromHexString('#FFFFFF'),
+            bold: true,
+            fontSize: 11,
+          );
+          rowIdx++;
+
+          // Info row (light green background)
+          final infoData = [
+            'JK: ${b.jenisKelamin ?? "-"}',
+            'Usia: ${b.usia ?? 0} Bln',
+            'Ayah: ${b.namaAyah ?? "-"}',
+            'Ibu: ${b.namaIbu ?? "-"}',
+            'BB: ${(b.berat ?? 0.0).toStringAsFixed(1)} kg',
+            'TB: ${(b.tinggi ?? 0.0).toStringAsFixed(1)} cm',
+          ];
+          for (int c = 0; c < infoData.length; c++) {
+            final cell = sheet.cell(
+              xl.CellIndex.indexByColumnRow(columnIndex: c, rowIndex: rowIdx),
+            );
+            cell.value = xl.TextCellValue(infoData[c]);
+            cell.cellStyle = xl.CellStyle(
+              fontSize: 9,
+              backgroundColorHex: xl.ExcelColor.fromHexString('#E8F5E9'),
+              leftBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+              rightBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+              topBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+              bottomBorder: xl.Border(borderStyle: xl.BorderStyle.Thin),
+            );
+          }
+          rowIdx++;
+
+          // History sub-table
+          if (b.riwayat != null && b.riwayat!.isNotEmpty) {
+            const subHeaders = [
+              'Tanggal',
+              'Berat (kg)',
+              'Tinggi (cm)',
+              'Status',
+              '',
+              '',
+            ];
+            for (int c = 0; c < subHeaders.length; c++) {
+              if (subHeaders[c].isEmpty) continue;
+              _xlCell(sheet, rowIdx, c, subHeaders[c], _xlSubHeader());
+            }
+            rowIdx++;
+
+            for (int i = 0; i < b.riwayat!.length; i++) {
+              final r = b.riwayat![i];
+              final ds = _xlData(i.isOdd);
+              final rd = [
+                r.tanggal ?? '-',
+                (r.berat ?? 0.0).toStringAsFixed(1),
+                (r.tinggi ?? 0.0).toStringAsFixed(1),
+                b.displayStatus,
+              ];
+              for (int c = 0; c < rd.length; c++) {
+                _xlCell(sheet, rowIdx, c, rd[c], ds);
+              }
+              rowIdx++;
+            }
+          } else {
+            sheet.merge(
+              xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: rowIdx),
+              xl.CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: rowIdx),
+            );
+            final na = sheet.cell(
+              xl.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: rowIdx),
+            );
+            na.value = xl.TextCellValue('Belum ada riwayat terekam.');
+            na.cellStyle = xl.CellStyle(
+              italic: true,
+              fontSize: 9,
+              fontColorHex: xl.ExcelColor.fromHexString('#888888'),
+            );
+            rowIdx++;
+          }
+
+          rowIdx++; // blank separator between balita
         }
+
+        // Column widths
+        sheet.setColumnWidth(0, 16);
+        sheet.setColumnWidth(1, 12);
+        sheet.setColumnWidth(2, 12);
+        sheet.setColumnWidth(3, 18);
+        sheet.setColumnWidth(4, 14);
+        sheet.setColumnWidth(5, 14);
       }
-      String csvData = const ListToCsvConverter().convert(rows);
+
+      // Save & share
       final directory = await getTemporaryDirectory();
-      final file = File(
-        "${directory.path}/rekap_posyandu_${DateTime.now().millisecondsSinceEpoch}.csv",
-      );
-      await file.writeAsString(csvData);
-      await Share.shareXFiles([XFile(file.path)], text: 'Export Data Posyandu');
-      if (mounted) ModernNotification.show(context, 'CSV Berhasil Dibagikan!');
+      final fileName =
+          'rekap_posyandu_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+      final file = File('${directory.path}/$fileName');
+      final bytes = excel.save();
+      if (bytes == null) throw Exception('Gagal membuat file Excel');
+      await file.writeAsBytes(bytes);
+      await Share.shareXFiles([
+        XFile(file.path),
+      ], text: 'Export Data Posyandu (.xlsx)');
+      if (mounted)
+        ModernNotification.show(context, 'Excel Berhasil Dibagikan!');
     } catch (e) {
-      if (mounted) ModernNotification.show(context, 'Gagal ekspor CSV: $e');
+      if (mounted) ModernNotification.show(context, 'Gagal ekspor Excel: $e');
     } finally {
       if (mounted) setState(() => _isExporting = false);
     }
@@ -484,7 +716,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                 if (_currentIndex == index) return;
                 setState(() => _currentIndex = index);
                 if (index == 0)
-                  Navigator.pushReplacementNamed(context, '/');
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
                 else if (index == 1)
                   Navigator.pushReplacementNamed(context, '/toddler_data');
                 else if (index == 2)
@@ -661,9 +893,9 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
-            onPressed: _isExporting ? null : _exportToCSV,
+            onPressed: _isExporting ? null : _exportToExcel,
             icon: const Icon(Icons.table_view, color: AppTheme.primary),
-            label: const Text('Ekspor ke CSV (Excel)'),
+            label: const Text('Ekspor ke Excel (.xlsx)'),
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.black87,
               side: BorderSide(color: AppTheme.primary.withValues(alpha: 0.2)),
@@ -694,7 +926,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
             SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Tipe "Daftar Master Balita" akan menampilkan seluruh riwayat pemeriksaan per anak untuk arsip lengkap.',
+                'File Excel (.xlsx) yang dihasilkan memiliki warna & format tabel yang identik dengan PDF. Buka dengan Microsoft Excel atau Google Sheets.',
                 style: TextStyle(fontSize: 12, color: Colors.black54),
               ),
             ),

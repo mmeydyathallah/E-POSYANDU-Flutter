@@ -80,6 +80,7 @@ class _ToddlerDetailScreenState extends State<ToddlerDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final bool isSehat = _currentBalita.keterangan == 'Sehat';
+    final String displayKeterangan = _currentBalita.displayStatus;
     final Color statusColor = isSehat
         ? AppTheme.primary
         : AppTheme.statusWarning;
@@ -289,8 +290,7 @@ class _ToddlerDetailScreenState extends State<ToddlerDetailScreen> {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(
-                                      (_currentBalita.keterangan ?? '-')
-                                          .toUpperCase(),
+                                      displayKeterangan.toUpperCase(),
                                       style: TextStyle(
                                         color: statusColor,
                                         fontWeight: FontWeight.bold,

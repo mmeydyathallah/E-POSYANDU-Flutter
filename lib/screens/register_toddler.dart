@@ -193,7 +193,7 @@ class _RegisterToddlerScreenState extends State<RegisterToddlerScreen> {
               setState(() => _currentIndex = index);
               switch (index) {
                 case 0:
-                  Navigator.pushReplacementNamed(context, '/');
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
                   break;
                 case 1:
                   Navigator.pushReplacementNamed(context, '/toddler_data');

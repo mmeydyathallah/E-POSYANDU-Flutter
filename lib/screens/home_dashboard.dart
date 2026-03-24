@@ -51,28 +51,35 @@ class _HomeDashboardState extends State<HomeDashboard> {
       if (mounted) setState(() => _isScanning = scanning);
     });
 
-    _bleService.sensorDataStream.listen((rawData) {
-      if (mounted) {
-        try {
-          final parts = rawData.split(',');
-          for (var part in parts) {
-            final kv = part.split(':');
-            if (kv.length == 2) {
-              if (kv[0].trim() == 'BERAT')
-                setState(
-                  () => _sensorWeight =
-                      double.tryParse(kv[1].trim()) ?? _sensorWeight,
-                );
-              else if (kv[0].trim() == 'TINGGI')
-                setState(
-                  () => _sensorHeight =
-                      double.tryParse(kv[1].trim()) ?? _sensorHeight,
-                );
-            }
+    void processData(String rawData) {
+      if (!mounted) return;
+      try {
+        final parts = rawData.split(',');
+        if (parts.length >= 2) {
+          double? w = double.tryParse(parts[0]);
+          double? h = double.tryParse(parts[1]);
+
+          if (w != null && h != null) {
+            setState(() {
+              _sensorWeight = w;
+              _sensorHeight = h;
+            });
           }
-        } catch (_) {}
-      }
+        }
+      } catch (_) {}
+    }
+
+    if (_bleService.lastData != null) {
+      processData(_bleService.lastData!);
+    }
+
+    _bleService.sensorDataStream.listen((rawData) {
+      processData(rawData);
     });
+  }
+
+  String _formatDecimal(double val) {
+    return val.toStringAsFixed(1).replaceAll('.', ',');
   }
 
   void _showEditProfileSheet(AppConfig config) {
@@ -251,13 +258,13 @@ class _HomeDashboardState extends State<HomeDashboard> {
               currentIndex: _currentIndex,
               onTap: (index) {
                 if (_currentIndex == index) return;
-                setState(() => _currentIndex = index);
-                if (index == 1)
-                  Navigator.pushReplacementNamed(context, '/toddler_data');
-                else if (index == 2)
-                  Navigator.pushReplacementNamed(context, '/growth');
-                else if (index == 3)
-                  Navigator.pushReplacementNamed(context, '/export');
+                if (index == 1) {
+                  Navigator.pushNamed(context, '/toddler_data');
+                } else if (index == 2) {
+                  Navigator.pushNamed(context, '/growth');
+                } else if (index == 3) {
+                  Navigator.pushNamed(context, '/export');
+                }
               },
               onAddTap: () => Navigator.pushNamed(context, '/input'),
             ),
@@ -513,14 +520,14 @@ class _HomeDashboardState extends State<HomeDashboard> {
                   children: [
                     _buildMiniStat(
                       'Berat',
-                      _sensorWeight.toStringAsFixed(1),
+                      _formatDecimal(_sensorWeight),
                       'kg',
                       Icons.monitor_weight_outlined,
                     ),
                     const SizedBox(width: 12),
                     _buildMiniStat(
                       'Tinggi',
-                      _sensorHeight.toStringAsFixed(1),
+                      _formatDecimal(_sensorHeight),
                       'cm',
                       Icons.straighten_outlined,
                     ),
@@ -633,13 +640,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
   }
 
   Widget _buildCheckupCard(Balita b) {
-    String statusLabel = b.keterangan ?? '-';
-    if (statusLabel == 'Berat Rendah')
-      statusLabel = 'Kurang Optimal';
-    else if (statusLabel == 'Berat Lebih')
-      statusLabel = 'Berlebih';
-    else if (statusLabel == 'Sehat')
-      statusLabel = 'Optimal';
+    String statusLabel = b.displayStatus;
 
     Color statusColor = AppTheme.primary;
     if (statusLabel == 'Kurang Optimal')

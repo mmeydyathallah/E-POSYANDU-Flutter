@@ -16,6 +16,7 @@ class ToddlerDataScreen extends StatefulWidget {
 class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
   int _currentIndex = 1;
   List<Balita> _listBalita = [];
+  String _selectedFilter = 'Semua';
 
   @override
   void initState() {
@@ -45,7 +46,7 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                     elevation: 0,
                     leading: IconButton(
                       onPressed: () =>
-                          Navigator.pushReplacementNamed(context, '/'),
+                          Navigator.popUntil(context, ModalRoute.withName('/')),
                       icon: const Icon(Icons.arrow_back),
                     ),
                     actions: [
@@ -73,22 +74,12 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
               currentIndex: _currentIndex,
               onTap: (index) {
                 if (_currentIndex == index) return;
-
-                setState(() => _currentIndex = index);
-
-                switch (index) {
-                  case 0:
-                    Navigator.pushReplacementNamed(context, '/');
-                    break;
-                  case 1:
-                    // Already on Toddler Data
-                    break;
-                  case 2:
-                    Navigator.pushReplacementNamed(context, '/growth');
-                    break;
-                  case 3:
-                    Navigator.pushReplacementNamed(context, '/export');
-                    break;
+                if (index == 0) {
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
+                } else if (index == 2) {
+                  Navigator.pushReplacementNamed(context, '/growth');
+                } else if (index == 3) {
+                  Navigator.pushReplacementNamed(context, '/export');
                 }
               },
               onAddTap: () {
@@ -133,15 +124,25 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
           children: [
             FilterChip(
               label: const Text('Semua'),
-              selected: true,
-              onSelected: (val) {},
+              selected: _selectedFilter == 'Semua',
+              onSelected: (val) {
+                if (val) setState(() => _selectedFilter = 'Semua');
+              },
               selectedColor: AppTheme.primary.withValues(alpha: 0.2),
               checkmarkColor: AppTheme.primary,
-              labelStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: AppTheme.primary,
+              labelStyle: TextStyle(
+                fontWeight: _selectedFilter == 'Semua'
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+                color: _selectedFilter == 'Semua'
+                    ? AppTheme.primary
+                    : Colors.black87,
               ),
-              side: BorderSide.none,
+              side: BorderSide(
+                color: _selectedFilter == 'Semua'
+                    ? Colors.transparent
+                    : Colors.grey.shade300,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -149,9 +150,25 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
             const SizedBox(width: 12),
             FilterChip(
               label: const Text('Terbaru'),
-              selected: false,
-              onSelected: (val) {},
-              side: BorderSide(color: Colors.grey.shade300),
+              selected: _selectedFilter == 'Terbaru',
+              onSelected: (val) {
+                if (val) setState(() => _selectedFilter = 'Terbaru');
+              },
+              selectedColor: AppTheme.primary.withValues(alpha: 0.2),
+              checkmarkColor: AppTheme.primary,
+              labelStyle: TextStyle(
+                fontWeight: _selectedFilter == 'Terbaru'
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+                color: _selectedFilter == 'Terbaru'
+                    ? AppTheme.primary
+                    : Colors.black87,
+              ),
+              side: BorderSide(
+                color: _selectedFilter == 'Terbaru'
+                    ? Colors.transparent
+                    : Colors.grey.shade300,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -159,9 +176,25 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
             const SizedBox(width: 12),
             FilterChip(
               label: const Text('Risiko Tinggi'),
-              selected: false,
-              onSelected: (val) {},
-              side: BorderSide(color: Colors.grey.shade300),
+              selected: _selectedFilter == 'Risiko Tinggi',
+              onSelected: (val) {
+                if (val) setState(() => _selectedFilter = 'Risiko Tinggi');
+              },
+              selectedColor: AppTheme.primary.withValues(alpha: 0.2),
+              checkmarkColor: AppTheme.primary,
+              labelStyle: TextStyle(
+                fontWeight: _selectedFilter == 'Risiko Tinggi'
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+                color: _selectedFilter == 'Risiko Tinggi'
+                    ? AppTheme.primary
+                    : Colors.black87,
+              ),
+              side: BorderSide(
+                color: _selectedFilter == 'Risiko Tinggi'
+                    ? Colors.transparent
+                    : Colors.grey.shade300,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -173,6 +206,21 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
   }
 
   Widget _buildToddlerList() {
+    List<Balita> filteredList = _listBalita;
+    if (_selectedFilter == 'Terbaru') {
+      filteredList = List.from(_listBalita)
+        ..sort((a, b) => b.id.compareTo(a.id));
+    } else if (_selectedFilter == 'Risiko Tinggi') {
+      filteredList = _listBalita
+          .where(
+            (b) =>
+                b.keterangan != 'Sehat' &&
+                b.keterangan != null &&
+                b.keterangan!.isNotEmpty,
+          )
+          .toList();
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -190,7 +238,7 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                 ),
               ),
               Text(
-                '${_listBalita.length} Total',
+                '${filteredList.length} Total',
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -201,7 +249,7 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: _listBalita.isEmpty
+            child: filteredList.isEmpty
                 ? const Center(
                     child: Text(
                       'Belum ada data balita. Silakan tambahkan!',
@@ -210,7 +258,7 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                   )
                 : ListView(
                     padding: const EdgeInsets.only(bottom: 24),
-                    children: _listBalita
+                    children: filteredList
                         .map(
                           (balita) => Column(
                             children: [
@@ -228,10 +276,12 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                                   name: balita.nama ?? 'Nama Anak',
                                   details:
                                       '${balita.usia ?? 0} Bulan • ID: ${(balita.tanggalDaftar ?? '').isNotEmpty ? (balita.tanggalDaftar ?? '').substring(0, 4) : "0000"}',
-                                  status: balita.keterangan ?? '-',
-                                  statusColor: balita.keterangan == 'Sehat'
+                                  status: balita.displayStatus,
+                                  statusColor: balita.displayStatus == 'Optimal'
                                       ? AppTheme.primary
-                                      : Colors.orange,
+                                      : (balita.displayStatus == 'Berlebih'
+                                            ? AppTheme.statusWarning
+                                            : AppTheme.statusDanger),
                                   imageUrl:
                                       'https://mighty.tools/mockmind-api/content/human/${((balita.nama ?? '').length % 50) + 10}.jpg',
                                   localPhotoPath: balita.fotoProfile,

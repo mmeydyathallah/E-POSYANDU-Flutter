@@ -6,6 +6,8 @@ import 'screens/input_data.dart';
 import 'screens/growth_tracker.dart';
 import 'screens/export_reports.dart';
 import 'screens/register_toddler.dart';
+import 'screens/splash_screen.dart';
+import 'screens/ble_splash.dart';
 import 'services/isar_service.dart';
 
 void main() async {
@@ -24,11 +26,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      initialRoute: '/',
+      themeMode: ThemeMode.light,
+      home: SplashScreen(nextScreen: const HomeDashboard()),
       routes: {
-        '/': (context) => const HomeDashboard(),
         '/toddler_data': (context) => const ToddlerDataScreen(),
         '/input': (context) => const InputDataScreen(),
+        '/input_data': (context) => const InputDataScreen(),
+        '/ble': (context) => const BLEDiceSplashScreen(),
         '/growth': (context) => const GrowthTrackerScreen(),
         '/export': (context) => const ExportReportsScreen(),
         '/register': (context) => const RegisterToddlerScreen(),
