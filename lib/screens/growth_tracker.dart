@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
@@ -8,17 +7,18 @@ import '../models/models.dart';
 import '../services/isar_service.dart';
 import '../services/ble_service.dart';
 import '../widgets/modern_notification.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 import '../utils/kms_helper.dart';
 
 class GrowthTrackerScreen extends StatefulWidget {
-  const GrowthTrackerScreen({Key? key}) : super(key: key);
+  const GrowthTrackerScreen({super.key});
   @override
   State<GrowthTrackerScreen> createState() => _GrowthTrackerScreenState();
 }
 
 class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
-  int _currentIndex = 2;
+  final int _currentIndex = 2;
   bool _showWeight = true;
   bool _isDetailView = false;
   bool _isSaving = false;
@@ -31,6 +31,11 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   final BleService _bleService = BleService();
   double _currentSensorWeight = 0.0;
   double _currentSensorHeight = 0.0;
+
+  final TextEditingController _manualWeightController = TextEditingController();
+  final TextEditingController _manualHeightController = TextEditingController();
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  bool _isManualInput = false;
 
   @override
   void initState() {
@@ -81,6 +86,9 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   void dispose() {
     _sub?.cancel();
     _sensorSub?.cancel();
+    _manualWeightController.dispose();
+    _manualHeightController.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -91,158 +99,288 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => StreamBuilder<String>(
-          stream: _bleService.sensorDataStream,
-          builder: (context, snapshot) {
-            // Already handled by sensorDataStream.listen in initState
-            return Container(
-              padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: AppTheme.navBackground,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-              ),
-              child: SafeArea(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 24),
-                    Text(
-                      'PENGUKURAN REAL-TIME',
-                      style: TextStyle(
-                        color: AppTheme.primary.withValues(alpha: 0.7),
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: 84,
-                      height: 84,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppTheme.primary.withValues(alpha: 0.5),
-                          width: 3,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.primary.withValues(alpha: 0.1),
-                            blurRadius: 20,
-                            spreadRadius: 5,
-                          ),
-                        ],
-                        image:
-                            (_selected!.fotoProfile != null &&
-                                _selected!.fotoProfile!.isNotEmpty)
-                            ? DecorationImage(
-                                image: FileImage(File(_selected!.fotoProfile!)),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                        color: Colors.white.withValues(alpha: 0.05),
-                      ),
-                      child:
-                          (_selected!.fotoProfile == null ||
-                              _selected!.fotoProfile!.isEmpty)
-                          ? Icon(
-                              Icons.child_care,
-                              color: AppTheme.primary.withValues(alpha: 0.5),
-                              size: 40,
-                            )
-                          : null,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      _selected!.nama ?? '',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${_selected!.usia ?? 0} Bulan · ${_selected!.jenisKelamin == "L" ? "Laki-laki" : "Perempuan"}',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
-                        fontSize: 13,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    Row(
-                      children: [
-                        _buildLiveCard(
-                          'BERAT',
-                          _formatDecimal(_currentSensorWeight),
-                          'kg',
-                          Icons.monitor_weight_outlined,
-                        ),
-                        const SizedBox(width: 16),
-                        _buildLiveCard(
-                          'TINGGI',
-                          _formatDecimal(_currentSensorHeight),
-                          'cm',
-                          Icons.straighten_outlined,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                    FilledButton(
-                      onPressed: _isSaving
-                          ? null
-                          : () async {
-                              setModalState(() => _isSaving = true);
-                              await _handleDirectSave();
-                              if (mounted) Navigator.pop(context);
-                              setModalState(() => _isSaving = false);
-                            },
-                      style: FilledButton.styleFrom(
-                        backgroundColor: AppTheme.primary,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 64),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: _isSaving
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 3,
-                              ),
-                            )
-                          : const Text(
-                              'KONFIRMASI & SIMPAN',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        'BATAL',
+        builder: (context, setModalState) {
+          return Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: AppTheme.navBackground,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+            ),
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'ALAT',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.3),
+                          color: _isManualInput
+                              ? Colors.white.withValues(alpha: 0.3)
+                              : AppTheme.primary,
+                          fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          fontSize: 12,
                           letterSpacing: 1,
                         ),
                       ),
+                      const SizedBox(width: 12),
+                      GestureDetector(
+                        onTap: () async {
+                          setModalState(() => _isManualInput = !_isManualInput);
+                          try {
+                            await _audioPlayer.play(
+                              AssetSource('audio/toggle_click.mp3'),
+                            );
+                          } catch (_) {}
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          width: 56,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            color: _isManualInput
+                                ? AppTheme.primary
+                                : Colors.grey.shade300,
+                            boxShadow: [
+                              BoxShadow(
+                                color:
+                                    (_isManualInput
+                                            ? AppTheme.primary
+                                            : Colors.black)
+                                        .withValues(alpha: 0.2),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: AnimatedAlign(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            alignment: _isManualInput
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              width: 24,
+                              height: 24,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'MANUAL',
+                        style: TextStyle(
+                          color: _isManualInput
+                              ? AppTheme.primary
+                              : Colors.white.withValues(alpha: 0.3),
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppTheme.primary.withValues(alpha: 0.5),
+                        width: 2,
+                      ),
+                      image:
+                          (_selected!.fotoProfile != null &&
+                              _selected!.fotoProfile!.isNotEmpty)
+                          ? DecorationImage(
+                              image: FileImage(File(_selected!.fotoProfile!)),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                      color: Colors.white.withValues(alpha: 0.05),
                     ),
-                  ],
-                ),
+                    child:
+                        (_selected!.fotoProfile == null ||
+                            _selected!.fotoProfile!.isEmpty)
+                        ? Icon(
+                            Icons.child_care,
+                            color: AppTheme.primary.withValues(alpha: 0.5),
+                            size: 30,
+                          )
+                        : null,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    _selected!.nama ?? '',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  if (!_isManualInput)
+                    StreamBuilder<String>(
+                      stream: _bleService.sensorDataStream,
+                      builder: (context, snapshot) {
+                        return Row(
+                          children: [
+                            _buildLiveCard(
+                              'BERAT',
+                              _formatDecimal(_currentSensorWeight),
+                              'kg',
+                              Icons.monitor_weight_outlined,
+                            ),
+                            const SizedBox(width: 16),
+                            _buildLiveCard(
+                              'TINGGI',
+                              _formatDecimal(_currentSensorHeight),
+                              'cm',
+                              Icons.straighten_outlined,
+                            ),
+                          ],
+                        );
+                      },
+                    )
+                  else
+                    Column(
+                      children: [
+                        _buildManualTextField(
+                          controller: _manualWeightController,
+                          label: 'Berat Badan',
+                          unit: 'kg',
+                          icon: Icons.monitor_weight_outlined,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildManualTextField(
+                          controller: _manualHeightController,
+                          label: 'Tinggi Badan',
+                          unit: 'cm',
+                          icon: Icons.straighten_outlined,
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 32),
+                  FilledButton(
+                    onPressed: _isSaving
+                        ? null
+                        : () async {
+                            setModalState(() => _isSaving = true);
+                            bool success = await _handleDirectSave(
+                              isManual: _isManualInput,
+                            );
+                            if (!context.mounted) return;
+                            if (success) {
+                              Navigator.pop(context);
+                            }
+                            setModalState(() => _isSaving = false);
+                          },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppTheme.primary,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 56),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: _isSaving
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          )
+                        : const Text(
+                            'KONFIRMASI & SIMPAN',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      'BATAL',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildManualTextField({
+    required TextEditingController controller,
+    required String label,
+    required String unit,
+    required IconData icon,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: AppTheme.primary, size: 24),
+          const SizedBox(width: 16),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              decoration: InputDecoration(
+                labelText: label,
+                labelStyle: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.4),
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+                suffixText: unit,
+                suffixStyle: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  fontSize: 14,
+                ),
+                border: InputBorder.none,
+                isDense: true,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -304,20 +442,40 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
     );
   }
 
-  Future<void> _handleDirectSave() async {
-    if (_selected == null) return;
+  Future<bool> _handleDirectSave({bool isManual = false}) async {
+    if (_selected == null) return false;
+
+    double weight = 0.0;
+    double height = 0.0;
+
+    if (isManual) {
+      String wStr = _manualWeightController.text.replaceAll(',', '.');
+      String hStr = _manualHeightController.text.replaceAll(',', '.');
+      weight = double.tryParse(wStr) ?? 0.0;
+      height = double.tryParse(hStr) ?? 0.0;
+
+      if (weight <= 0 || height <= 0) {
+        ModernNotification.show(
+          context,
+          'Masukkan nilai berat dan tinggi yang valid!',
+        );
+        return false;
+      }
+    } else {
+      weight = _currentSensorWeight;
+      height = _currentSensorHeight;
+    }
+
     final riwayat = Riwayat(
       tanggal: DateTime.now().toIso8601String().substring(0, 10),
-      berat: _currentSensorWeight,
-      tinggi: _currentSensorHeight,
+      berat: weight,
+      tinggi: height,
     );
 
-    _selected!.berat = _currentSensorWeight;
-    _selected!.tinggi = _currentSensorHeight;
+    _selected!.berat = weight;
+    _selected!.tinggi = height;
     String status = KmsHelper.calculateDbStatus(_selected!);
     _selected!.keterangan = status;
-    _selected!.berat = _currentSensorWeight;
-    _selected!.tinggi = _currentSensorHeight;
 
     await IsarService().addRiwayat(_selected!, riwayat);
 
@@ -327,6 +485,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
         'Data ${_selected!.nama} disimpan. Status: ${_selected!.displayStatus}',
       );
     }
+    return true;
   }
 
   @override
@@ -364,12 +523,13 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
               currentIndex: _currentIndex,
               onTap: (index) {
                 if (_currentIndex == index) return;
-                if (index == 0)
+                if (index == 0) {
                   Navigator.popUntil(context, ModalRoute.withName('/'));
-                else if (index == 1)
+                } else if (index == 1) {
                   Navigator.pushReplacementNamed(context, '/toddler_data');
-                else if (index == 3)
+                } else if (index == 3) {
                   Navigator.pushReplacementNamed(context, '/export');
+                }
               },
               onAddTap: () => Navigator.pushNamed(context, '/input'),
             ),
@@ -440,19 +600,20 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   }
 
   Widget _buildToddlerList() {
-    if (_listBalita.isEmpty)
+    if (_listBalita.isEmpty) {
       return const Center(
         child: Padding(
           padding: EdgeInsets.only(top: 100),
           child: Text('Belum ada data balita.'),
         ),
       );
+    }
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       itemCount: _listBalita.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final balita = _listBalita[index];
         final bool isGirl = (balita.jenisKelamin ?? '') == 'P';
@@ -535,12 +696,11 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                     );
                     if (confirm == true) {
                       await IsarService().deleteBalita(balita.id);
-                      if (mounted) {
-                        ModernNotification.show(
-                          context,
-                          'Data ${balita.nama} dihapus.',
-                        );
-                      }
+                      if (!context.mounted) return;
+                      ModernNotification.show(
+                        context,
+                        'Data ${balita.nama} dihapus.',
+                      );
                     }
                   },
                 ),
@@ -991,11 +1151,11 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                                       _selected!,
                                       idx,
                                     );
-                                    if (mounted)
-                                      ModernNotification.show(
-                                        context,
-                                        'Riwayat dihapus.',
-                                      );
+                                    if (!mounted) return;
+                                    ModernNotification.show(
+                                      context,
+                                      'Riwayat dihapus.',
+                                    );
                                   }
                                 },
                                 child: const Icon(
@@ -1010,7 +1170,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                       ],
                     ),
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),
@@ -1195,10 +1355,11 @@ class _KmsChartPainter extends CustomPainter {
       final path = Path();
       for (int i = 0; i < keys.length; i++) {
         double x = xOf(keys[i]), y = yOf(whoRef[keys[i]]![refIdx]);
-        if (i == 0)
+        if (i == 0) {
           path.moveTo(x, y);
-        else
+        } else {
           path.lineTo(x, y);
+        }
       }
       canvas.drawPath(path, p);
     }
@@ -1221,10 +1382,11 @@ class _KmsChartPainter extends CustomPainter {
         int months = (dt.difference(start).inDays / 30).floor().clamp(0, 60);
         double x = xOf(months),
             y = yOf(showWeight ? riwayat[i].berat! : riwayat[i].tinggi!);
-        if (i == 0)
+        if (i == 0) {
           path.moveTo(x, y);
-        else
+        } else {
           path.lineTo(x, y);
+        }
         canvas.drawCircle(Offset(x, y), 4, Paint()..color = Colors.white);
         canvas.drawCircle(Offset(x, y), 3, Paint()..color = AppTheme.primary);
       } catch (_) {}
@@ -1329,7 +1491,7 @@ class _BalitaSearchSheetState extends State<_BalitaSearchSheet> {
             child: ListView.separated(
               shrinkWrap: true,
               itemCount: _filtered.length,
-              separatorBuilder: (_, __) => const Divider(),
+              separatorBuilder: (context, i) => const Divider(),
               itemBuilder: (context, i) {
                 final b = _filtered[i];
                 return ListTile(
