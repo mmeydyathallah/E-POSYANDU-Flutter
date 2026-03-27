@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
@@ -1316,20 +1317,53 @@ class _KmsChartPainter extends CustomPainter {
     const double padL = 35, padR = 10, padT = 10, padB = 25;
     final double chartW = size.width - padL - padR,
         chartH = size.height - padT - padB;
-    final double minY = showWeight ? 0 : 40,
-        maxY = showWeight ? 25 : 120,
-        rangeY = maxY - minY;
+
+    // --- Autoscale: hitung minY & maxY dari data aktual ---
+    final allValues = <double>[];
+    // Tambahkan semua nilai riwayat anak
+    for (final r in riwayat) {
+      final v = showWeight ? (r.berat ?? 0) : (r.tinggi ?? 0);
+      if (v > 0) allValues.add(v);
+    }
+    // Tambahkan semua titik referensi WHO (hanya relevan untuk berat)
+    if (showWeight) {
+      for (final refs in whoRef.values) {
+        allValues.addAll(refs);
+      }
+    }
+
+    double minY, maxY;
+    if (allValues.isEmpty) {
+      // fallback default jika tidak ada data sama sekali
+      minY = showWeight ? 0 : 40;
+      maxY = showWeight ? 30 : 130;
+    } else {
+      double rawMin = allValues.reduce(math.min);
+      double rawMax = allValues.reduce(math.max);
+      // Padding 15% agar garis tidak menempel ke tepi
+      final pad = (rawMax - rawMin) * 0.15 + 1.0;
+      minY = (rawMin - pad).clamp(0.0, double.infinity);
+      maxY = rawMax + pad;
+      // Untuk berat, mulai dari 0 jika batas bawah masih dekat 0
+      if (showWeight && minY < 5) minY = 0;
+    }
+    final double rangeY = (maxY - minY) > 0 ? (maxY - minY) : 1;
+
     double xOf(int month) => padL + (month / 60) * chartW;
     double yOf(double v) => padT + (1 - (v - minY) / rangeY) * chartH;
+
     final gridPaint = Paint()
       ..color = Colors.grey.shade100
       ..strokeWidth = 1;
     for (int yi = 0; yi <= 5; yi++) {
       double dy = padT + (yi / 5) * chartH;
       canvas.drawLine(Offset(padL, dy), Offset(padL + chartW, dy), gridPaint);
+      final labelVal = maxY - (yi / 5) * rangeY;
+      // Tampilkan desimal hanya bila range sempit (< 15 unit)
+      final labelStr = labelVal.toStringAsFixed(rangeY < 15 ? 1 : 0);
       _drawText(
         canvas,
-        (maxY - (yi / 5) * rangeY).toStringAsFixed(0),
+        labelStr,
         Offset(5, dy - 6),
         8,
         Colors.black38,
