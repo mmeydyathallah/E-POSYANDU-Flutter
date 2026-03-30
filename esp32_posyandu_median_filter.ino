@@ -70,7 +70,7 @@ float height_offset = 0.0;
 float currentHeight = 0.0;
 
 // ==========================================
-// GLOBALS
+// GLOBAL
 // ==========================================
 // EMA Filter Variables
 float smoothedWeight = 0.0;

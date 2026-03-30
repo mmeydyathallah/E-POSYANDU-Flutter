@@ -1,0 +1,20 @@
+﻿Analyzing growth_tracker.dart...                                
+
+warning - Unused import: 'dart:math' - lib\screens\growth_tracker.dart:3:8 - unused_import
+   info - Parameter 'key' could be a super parameter - lib\screens\growth_tracker.dart:17:9 - use_super_parameters
+   info - The private field _currentIndex could be 'final' - lib\screens\growth_tracker.dart:23:7 - prefer_final_fields
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\growth_tracker.dart:269:45 - use_build_context_synchronously
+   info - Statements in an if should be enclosed in a block - lib\screens\growth_tracker.dart:512:19 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\growth_tracker.dart:514:19 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\growth_tracker.dart:516:19 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\growth_tracker.dart:588:7 - curly_braces_in_flow_control_structures
+   info - Unnecessary use of multiple underscores - lib\screens\growth_tracker.dart:599:29 - unnecessary_underscores
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\growth_tracker.dart:684:27 - use_build_context_synchronously
+   info - Statements in an if should be enclosed in a block - lib\screens\growth_tracker.dart:1139:39 - curly_braces_in_flow_control_structures
+   info - Unnecessary use of 'toList' in a spread - lib\screens\growth_tracker.dart:1157:20 - unnecessary_to_list_in_spreads
+   info - Statements in an if should be enclosed in a block - lib\screens\growth_tracker.dart:1343:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\growth_tracker.dart:1345:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\growth_tracker.dart:1369:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\growth_tracker.dart:1371:11 - curly_braces_in_flow_control_structures
+   info - Unnecessary use of multiple underscores - lib\screens\growth_tracker.dart:1476:37 - unnecessary_underscores
+
