@@ -8,6 +8,7 @@ import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../services/activity_log_service.dart';
 import '../services/isar_service.dart';
 import '../widgets/modern_notification.dart';
 
@@ -23,6 +24,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
   DateTimeRange? _selectedDateRange;
   bool _isExporting = false;
   int _reportType = 0;
+  final ActivityLogService _logService = ActivityLogService();
 
   @override
   void initState() {
@@ -50,7 +52,15 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
         child: child!,
       ),
     );
-    if (picked != null) setState(() => _selectedDateRange = picked);
+    if (picked != null) {
+      setState(() => _selectedDateRange = picked);
+      await _logService.log(
+        'Export',
+        'Ubah rentang laporan ke '
+            '${picked.start.toIso8601String().substring(0, 10)} s/d '
+            '${picked.end.toIso8601String().substring(0, 10)}.',
+      );
+    }
   }
 
   Future<void> _exportToPDF() async {
@@ -259,8 +269,13 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
       await Printing.layoutPdf(
         onLayout: (PdfPageFormat format) async => pdf.save(),
       );
+      await _logService.log(
+        'Export',
+        'Export PDF berhasil (${_reportType == 0 ? "Kunjungan Harian" : "Master Balita"}).',
+      );
       if (mounted) ModernNotification.show(context, 'PDF Berhasil Dibuat!');
     } catch (e) {
+      await _logService.log('Export', 'Export PDF gagal: $e');
       if (mounted) ModernNotification.show(context, 'Gagal ekspor PDF: $e');
     } finally {
       if (mounted) setState(() => _isExporting = false);
@@ -675,9 +690,14 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
       await Share.shareXFiles([
         XFile(file.path),
       ], text: 'Export Data Posyandu (.xlsx)');
+      await _logService.log(
+        'Export',
+        'Export Excel berhasil (${_reportType == 0 ? "Kunjungan Harian" : "Master Balita"}).',
+      );
       if (mounted)
         ModernNotification.show(context, 'Excel Berhasil Dibagikan!');
     } catch (e) {
+      await _logService.log('Export', 'Export Excel gagal: $e');
       if (mounted) ModernNotification.show(context, 'Gagal ekspor Excel: $e');
     } finally {
       if (mounted) setState(() => _isExporting = false);

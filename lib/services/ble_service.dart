@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
+import 'activity_log_service.dart';
+import 'app_settings_service.dart';
 
 class BleService {
   // Singleton instance
@@ -40,17 +44,30 @@ class BleService {
     // Check if Bluetooth is ON before scanning
     if (await FlutterBluePlus.adapterState.first != BluetoothAdapterState.on) {
       print("Bluetooth is OFF. Please turn it ON.");
+      await ActivityLogService().log(
+        'BLE',
+        'Scan gagal: Bluetooth belum aktif.',
+      );
       return;
     }
-    await FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
+    final timeout =
+        Duration(seconds: AppSettingsService().settings.scanTimeoutSeconds);
+    await ActivityLogService().log('BLE', 'Memulai scan perangkat BLE.');
+    await FlutterBluePlus.startScan(timeout: timeout);
   }
 
   Future<void> stopScan() async {
     await FlutterBluePlus.stopScan();
+    await ActivityLogService().log('BLE', 'Scan BLE dihentikan.');
   }
 
   Future<void> connectToDevice(BluetoothDevice device) async {
     _connectedDevice = device;
+    final name = device.advName.isEmpty ? 'Unknown Device' : device.advName;
+    await ActivityLogService().log(
+      'BLE',
+      'Mencoba koneksi ke $name (${device.remoteId}).',
+    );
     try {
       // Re-adding the required license parameter for your specific environment
       await device.connect(license: License.free);
@@ -64,8 +81,16 @@ class BleService {
       } catch (_) {}
 
       await _discoverServices();
+      await ActivityLogService().log(
+        'BLE',
+        'Koneksi berhasil ke $name (${device.remoteId}).',
+      );
     } catch (e) {
       print("Error connecting to device: $e");
+      await ActivityLogService().log(
+        'BLE',
+        'Koneksi gagal ke ${device.remoteId}: $e',
+      );
       rethrow;
     }
   }
@@ -136,15 +161,30 @@ class BleService {
       try {
         await _commandChar!.write(cmd.codeUnits);
         print("Command sent: $cmd");
+        await ActivityLogService().log('BLE', 'Perintah dikirim: $cmd');
       } catch (e) {
         print("Error sending command: $e");
+        await ActivityLogService().log('BLE', 'Gagal kirim perintah "$cmd": $e');
       }
     } else {
       print("Command characteristic not found!");
+      await ActivityLogService().log(
+        'BLE',
+        'Gagal kirim perintah "$cmd": characteristic tidak ditemukan.',
+      );
     }
   }
 
   void disconnect() {
+    if (_connectedDevice != null) {
+      final name = _connectedDevice!.advName.isEmpty
+          ? 'Unknown Device'
+          : _connectedDevice!.advName;
+      ActivityLogService().log(
+        'BLE',
+        'Memutus koneksi dari $name (${_connectedDevice!.remoteId}).',
+      );
+    }
     _connectedDevice?.disconnect();
     _connectedDevice = null;
     _dataChar = null;

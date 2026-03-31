@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../services/ble_service.dart';
+import '../services/app_settings_service.dart';
 import '../services/isar_service.dart';
 import '../models/models.dart';
 import '../widgets/modern_notification.dart';
@@ -28,6 +29,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
   bool _isConnected = false;
   bool _isScanning = false;
   String _connectionStatus = 'Tidak Terhubung';
+  final AppSettingsService _settingsService = AppSettingsService();
+  bool _autoConnectSheetShown = false;
 
   @override
   void initState() {
@@ -76,10 +79,26 @@ class _HomeDashboardState extends State<HomeDashboard> {
     _bleService.sensorDataStream.listen((rawData) {
       processData(rawData);
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_autoConnectSheetShown &&
+          _settingsService.settings.autoConnectBle &&
+          !_isConnected &&
+          mounted) {
+        _autoConnectSheetShown = true;
+        _showBleSelectionDialog();
+      }
+    });
   }
 
   String _formatDecimal(double val) {
     return val.toStringAsFixed(1).replaceAll('.', ',');
+  }
+
+  String _initial(String? text, {String fallback = 'A'}) {
+    final value = (text ?? '').trim();
+    if (value.isEmpty) return fallback;
+    return value[0].toUpperCase();
   }
 
   void _showEditProfileSheet(AppConfig config) {
@@ -133,18 +152,21 @@ class _HomeDashboardState extends State<HomeDashboard> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(color: AppTheme.primary, width: 3),
+                          color: AppTheme.primary.withValues(alpha: 0.12),
                           image: tempImagePath != null
                               ? DecorationImage(
                                   image: FileImage(File(tempImagePath!)),
                                   fit: BoxFit.cover,
                                 )
-                              : const DecorationImage(
-                                  image: NetworkImage(
-                                    'https://mighty.tools/mockmind-api/content/human/5.jpg',
-                                  ),
-                                  fit: BoxFit.cover,
-                                ),
+                              : null,
                         ),
+                        child: tempImagePath == null
+                            ? const Icon(
+                                Icons.person,
+                                color: AppTheme.primary,
+                                size: 42,
+                              )
+                            : null,
                       ),
                       Positioned(
                         bottom: 0,
@@ -287,79 +309,141 @@ class _HomeDashboardState extends State<HomeDashboard> {
         return Padding(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              GestureDetector(
-                onTap: () => _showEditProfileSheet(
-                  config ??
-                      AppConfig(adminName: 'Admin', posyanduName: 'Pasuruan'),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppTheme.primary, width: 2),
-                        image: photoPath != null && photoPath.isNotEmpty
-                            ? DecorationImage(
-                                image: FileImage(File(photoPath)),
-                                fit: BoxFit.cover,
-                              )
-                            : const DecorationImage(
-                                image: NetworkImage(
-                                  'https://mighty.tools/mockmind-api/content/human/5.jpg',
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _showEditProfileSheet(
+                    config ??
+                        AppConfig(adminName: 'Admin', posyanduName: 'Pasuruan'),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppTheme.primary, width: 2),
+                          color: AppTheme.primary.withValues(alpha: 0.12),
+                          image: photoPath != null && photoPath.isNotEmpty
+                              ? DecorationImage(
+                                  image: FileImage(File(photoPath)),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        child: (photoPath == null || photoPath.isEmpty)
+                            ? Text(
+                                _initial(adminName),
+                                style: const TextStyle(
+                                  color: AppTheme.primary,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                fit: BoxFit.cover,
-                              ),
+                              )
+                            : null,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          adminName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              adminName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              posyanduName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.primary,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          posyanduName,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Badge(
-                isLabelVisible: _listBalita.any((b) => b.keterangan != 'Sehat'),
-                backgroundColor: Colors.red,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
                       ),
                     ],
                   ),
-                  child: IconButton(
-                    onPressed: _showNotificationList,
-                    icon: const Icon(Icons.notifications_outlined),
-                    color: Colors.black87,
-                  ),
                 ),
+              ),
+              const SizedBox(width: 8),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/settings');
+                      },
+                      icon: const Icon(Icons.settings_outlined),
+                      color: Colors.black87,
+                      tooltip: 'Settings',
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/activity_logs');
+                      },
+                      icon: const Icon(Icons.history_rounded),
+                      color: Colors.black87,
+                      tooltip: 'Aktivitas',
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Badge(
+                    isLabelVisible: _listBalita.any(
+                      (b) => b.keterangan != 'Sehat',
+                    ),
+                    backgroundColor: Colors.red,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: _showNotificationList,
+                        icon: const Icon(Icons.notifications_outlined),
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -666,11 +750,20 @@ class _HomeDashboardState extends State<HomeDashboard> {
         children: [
           CircleAvatar(
             radius: 22,
+            backgroundColor: AppTheme.primary.withValues(alpha: 0.12),
             backgroundImage:
                 (b.fotoProfile != null && b.fotoProfile!.isNotEmpty)
                 ? FileImage(File(b.fotoProfile!))
-                : const AssetImage('assets/images/placeholder_baby.png')
-                      as ImageProvider,
+                : null,
+            child: (b.fotoProfile == null || b.fotoProfile!.isEmpty)
+                ? Text(
+                    _initial(b.nama, fallback: 'B'),
+                    style: const TextStyle(
+                      color: AppTheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                : null,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1066,18 +1159,27 @@ class _HomeDashboardState extends State<HomeDashboard> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white10, width: 2),
-                          image: DecorationImage(
-                            image:
-                                (b.fotoProfile != null &&
-                                    b.fotoProfile!.isNotEmpty)
-                                ? FileImage(File(b.fotoProfile!))
-                                : const AssetImage(
-                                        'assets/images/placeholder_baby.png',
-                                      )
-                                      as ImageProvider,
-                            fit: BoxFit.cover,
-                          ),
+                          color: AppTheme.primary.withValues(alpha: 0.12),
+                          image: (b.fotoProfile != null &&
+                                  b.fotoProfile!.isNotEmpty)
+                              ? DecorationImage(
+                                  image: FileImage(File(b.fotoProfile!)),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
                         ),
+                        child: (b.fotoProfile == null || b.fotoProfile!.isEmpty)
+                            ? Center(
+                                child: Text(
+                                  _initial(b.nama, fallback: 'B'),
+                                  style: const TextStyle(
+                                    color: AppTheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              )
+                            : null,
                       ),
                       const SizedBox(width: 16),
                       Expanded(

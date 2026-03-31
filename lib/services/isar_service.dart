@@ -1,6 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/models.dart';
+import 'activity_log_service.dart';
 
 class IsarService {
   static late Isar _isar;
@@ -45,6 +46,10 @@ class IsarService {
     await _isar.writeTxn(() async {
       await _isar.appConfigs.put(config);
     });
+    await ActivityLogService().log(
+      'Config',
+      'Profil admin diperbarui (${config.adminName ?? "Admin"}).',
+    );
   }
 
   // ─── SEEDS ────────────────────────────────────────────────────────────────
@@ -132,9 +137,16 @@ class IsarService {
 
   /// Save or update a balita (uses uid as unique key via @Index)
   Future<void> saveBalita(Balita balita) async {
+    final isNew = balita.id == Isar.autoIncrement;
     await _isar.writeTxn(() async {
       await _isar.balitas.put(balita);
     });
+    await ActivityLogService().log(
+      'Data Balita',
+      isNew
+          ? 'Tambah data balita: ${balita.nama ?? "-"}'
+          : 'Update data balita: ${balita.nama ?? "-"}',
+    );
   }
 
   /// Add a new Riwayat entry to an existing balita
@@ -144,16 +156,23 @@ class IsarService {
     balita.berat = riwayat.berat;
     balita.tinggi = riwayat.tinggi;
     await saveBalita(balita);
+    await ActivityLogService().log(
+      'Pemeriksaan',
+      'Simpan pengukuran ${balita.nama ?? "-"} '
+          '(BB ${riwayat.berat?.toStringAsFixed(1) ?? "0.0"} kg, '
+          'TB ${riwayat.tinggi?.toStringAsFixed(1) ?? "0.0"} cm).',
+    );
   }
 
   /// Remove a Riwayat entry from an existing balita
   Future<void> deleteRiwayat(Balita balita, int index) async {
     if (balita.riwayat == null || index < 0 || index >= balita.riwayat!.length) return;
-    
+
+    final deleted = balita.riwayat![index];
     final newList = List<Riwayat>.from(balita.riwayat!);
     newList.removeAt(index);
     balita.riwayat = newList;
-    
+
     // Update latest stats if the removed record was the latest
     if (newList.isNotEmpty) {
       balita.berat = newList.last.berat;
@@ -164,12 +183,21 @@ class IsarService {
     }
 
     await saveBalita(balita);
+    await ActivityLogService().log(
+      'Pemeriksaan',
+      'Hapus riwayat ${balita.nama ?? "-"} pada ${deleted.tanggal ?? "-"}.',
+    );
   }
 
   /// Delete a balita by Isar id
   Future<void> deleteBalita(int id) async {
+    final balita = await _isar.balitas.get(id);
     await _isar.writeTxn(() async {
       await _isar.balitas.delete(id);
     });
+    await ActivityLogService().log(
+      'Data Balita',
+      'Hapus data balita: ${balita?.nama ?? "ID $id"}',
+    );
   }
 }

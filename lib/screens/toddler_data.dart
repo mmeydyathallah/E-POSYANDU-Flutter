@@ -18,6 +18,12 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
   List<Balita> _listBalita = [];
   String _selectedFilter = 'Semua';
 
+  String _initial(String? text, {String fallback = 'B'}) {
+    final value = (text ?? '').trim();
+    if (value.isEmpty) return fallback;
+    return value[0].toUpperCase();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -282,8 +288,6 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                                       : (balita.displayStatus == 'Berlebih'
                                             ? AppTheme.statusWarning
                                             : AppTheme.statusDanger),
-                                  imageUrl:
-                                      'https://mighty.tools/mockmind-api/content/human/${((balita.nama ?? '').length % 50) + 10}.jpg',
                                   localPhotoPath: balita.fotoProfile,
                                 ),
                               ),
@@ -304,7 +308,6 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
     required String details,
     required String status,
     required Color statusColor,
-    required String imageUrl,
     String? localPhotoPath,
     bool isWarning = false,
   }) {
@@ -333,6 +336,7 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                 height: 64,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
+                  color: AppTheme.primary.withValues(alpha: 0.12),
                   border: Border.all(color: Colors.white, width: 2),
                   boxShadow: [
                     BoxShadow(
@@ -340,13 +344,25 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                       blurRadius: 4,
                     ),
                   ],
-                  image: DecorationImage(
-                    image: (localPhotoPath != null && localPhotoPath.isNotEmpty)
-                        ? FileImage(File(localPhotoPath))
-                        : NetworkImage(imageUrl) as ImageProvider,
-                    fit: BoxFit.cover,
-                  ),
+                  image: (localPhotoPath != null && localPhotoPath.isNotEmpty)
+                      ? DecorationImage(
+                          image: FileImage(File(localPhotoPath)),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
+                child: (localPhotoPath == null || localPhotoPath.isEmpty)
+                    ? Center(
+                        child: Text(
+                          _initial(name),
+                          style: const TextStyle(
+                            color: AppTheme.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                          ),
+                        ),
+                      )
+                    : null,
               ),
               Positioned(
                 bottom: 0,

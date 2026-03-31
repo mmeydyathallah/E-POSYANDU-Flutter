@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../models/models.dart';
 import '../services/ble_service.dart';
+import '../services/app_settings_service.dart';
 import '../services/isar_service.dart';
 import '../widgets/modern_notification.dart';
 
@@ -118,6 +119,12 @@ class _InputDataScreenState extends State<InputDataScreen> {
     return val.toStringAsFixed(1).replaceAll('.', ',');
   }
 
+  String _initial(String? text, {String fallback = 'B'}) {
+    final value = (text ?? '').trim();
+    if (value.isEmpty) return fallback;
+    return value[0].toUpperCase();
+  }
+
   @override
   void dispose() {
     _bleSub?.cancel();
@@ -131,6 +138,29 @@ class _InputDataScreenState extends State<InputDataScreen> {
     if (_selectedBalita == null) {
       ModernNotification.show(context, 'Pilih balita terlebih dahulu!');
       return;
+    }
+    final settings = AppSettingsService().settings;
+    if (settings.confirmBeforeSave) {
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Konfirmasi Simpan'),
+          content: Text(
+            'Simpan berat ${_formatDecimal(_currentWeight)} kg dan tinggi ${_formatDecimal(_currentHeight)} cm untuk ${_selectedBalita?.nama ?? 'balita'}?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Yakin'),
+            ),
+          ],
+        ),
+      );
+      if (confirm != true) return;
     }
     setState(() => _isSaving = true);
 
@@ -791,18 +821,27 @@ class _InputDataScreenState extends State<InputDataScreen> {
                                   blurRadius: 4,
                                 ),
                               ],
-                              image: DecorationImage(
-                                image:
-                                    (balita.fotoProfile != null &&
-                                        balita.fotoProfile!.isNotEmpty)
-                                    ? FileImage(File(balita.fotoProfile!))
-                                    : NetworkImage(
-                                            'https://mighty.tools/mockmind-api/content/human/${((balita.nama ?? '').length % 50) + 10}.jpg',
-                                          )
-                                          as ImageProvider,
-                                fit: BoxFit.cover,
-                              ),
+                              image: (balita.fotoProfile != null &&
+                                      balita.fotoProfile!.isNotEmpty)
+                                  ? DecorationImage(
+                                      image: FileImage(File(balita.fotoProfile!)),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
                             ),
+                            child: (balita.fotoProfile == null ||
+                                    balita.fotoProfile!.isEmpty)
+                                ? Center(
+                                    child: Text(
+                                      _initial(balita.nama),
+                                      style: const TextStyle(
+                                        color: AppTheme.primary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 24,
+                                      ),
+                                    ),
+                                  )
+                                : null,
                           ),
                           Positioned(
                             bottom: 0,
