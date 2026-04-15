@@ -2,6 +2,7 @@
  * ESP32-C6 Code untuk Aplikasi Posyandu
  * MODE: Real Sensors (HX711 & VL53L0X) + LCD via I2C + BLE
  * DENGAN FITUR MEDIAN FILTER (Stabilisasi Sensor Berat & Jarak)
+ * + ELEGANTOTA (OTA Update via WiFi Access Point / Web Browser)
  *
  * Library yang dibutuhkan:
  *   - NimBLE-Arduino (Install via Library Manager)
@@ -9,6 +10,9 @@
  *   - HX711_ADC by Olav Kallhovd atau HX711 by Bogdan Necula
  *   - VL53L0X by Pololu
  *   - LiquidCrystal_I2C
+ *   - ElegantOTA (Install via Library Manager: "ElegantOTA")
+ *   - AsyncTCP (Install via Library Manager: "AsyncTCP")
+ *   - ESPAsyncWebServer (Install via Library Manager: "ESPAsyncWebServer")
  *
  * ============================================================
  * PINOUT ESP32-C6
@@ -18,14 +22,43 @@
  *  HX711 DOUT → GPIO 12
  *  HX711 SCK  → GPIO 13
  *  RGB LED  →  GPIO 8 (WS2812 Built-in)
+ *
+ * ============================================================
+ * CARA PAKAI OTA (ElegantOTA via Access Point)
+ * ============================================================
+ *  1. Upload firmware ini via kabel (pertama kali)
+ *  2. ESP32 akan membuat hotspot WiFi sendiri (lihat AP_SSID di bawah)
+ *  3. Sambungkan HP/Laptop ke WiFi hotspot ESP32 tersebut
+ *  4. Buka browser: http://23.23.23.1/update
+ *  5. Upload file .bin firmware baru langsung dari browser!
+ *  6. OTA username: admin | password: posyandu (bisa diubah di bawah)
+ * ============================================================
  */
 
 #include <Adafruit_NeoPixel.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <ElegantOTA.h>
 #include <HX711.h>
 #include <LiquidCrystal_I2C.h>
 #include <NimBLEDevice.h>
 #include <VL53L0X.h>
+#include <WiFi.h>
 #include <Wire.h>
+
+// ==========================================
+// KONFIGURASI ACCESS POINT (Hotspot ESP32)
+// ==========================================
+const char *AP_SSID = "E-Posyandu"; // <-- Nama hotspot ESP32
+const char *AP_PASSWORD =
+    "Meydy2004"; // <-- Password hotspot (min 8 karakter, kosongkan jika open)
+
+// ==========================================
+// KONFIGURASI OTA (Username & Password Web OTA)
+// ==========================================
+const char *OTA_USERNAME = "meydy";
+const char *OTA_PASSWORD = "Meydy2004";
+const int OTA_PORT = 80; // Port web server OTA
 
 // ==========================================
 // BLE CONFIGURATION
@@ -51,10 +84,16 @@
 #define LCD_I2C_ADDRESS 0x27     // LCD 20x4 I2C
 #define VL53L0X_I2C_ADDRESS 0x29 // VL53L0X ToF Sensor
 
+// ==========================================
+// OBJEK HARDWARE
+// ==========================================
 Adafruit_NeoPixel pixels(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
 HX711 scale;
 VL53L0X sensorHeight;
 LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, 20, 4);
+
+// Web Server & ElegantOTA
+AsyncWebServer server(OTA_PORT);
 
 // ==========================================
 // SENSOR VARIABLES
@@ -81,6 +120,7 @@ const float alphaHeight = 0.3; // Faktor EMA tinggi
 bool hardwareError = false;
 bool loadCellReady = false; // Flag: load cell tersambung atau tidak
 bool vl53l0xReady = false;  // Flag: lidar tersambung atau tidak
+bool apActive = false;      // Flag: Access Point aktif atau tidak
 
 NimBLEServer *pServer = nullptr;
 NimBLECharacteristic *pDataCharacteristic = nullptr;
@@ -90,9 +130,17 @@ bool deviceConnected = false;
 bool oldDeviceConnected = false;
 unsigned long lastReadTime = 0;
 unsigned long lastSendTime = 0;
+unsigned long lastLCDTime = 0;
 const unsigned long readInterval = 100;  // Baca sensor setiap 100ms
 const unsigned long sendInterval = 1000; // Kirim data ke BLE tiap 1 detik
+const unsigned long lcdInterval = 500;   // Refresh LCD tiap 500ms
+
 String bleMacAddress = ""; // MAC address ESP32 untuk ditampilkan di LCD
+String apIPAddress = "";   // IP Address AP untuk OTA (defaultnya 192.168.4.1)
+
+// OTA progress tracking
+bool otaInProgress = false;
+unsigned long otaStartTime = 0;
 
 // ==========================================
 // LCD HELPER
@@ -113,11 +161,31 @@ void updateLCD(String status) {
   lcd.print(" cm");
 
   lcd.setCursor(0, 3);
-  if (deviceConnected) {
-    lcd.print("BLE: Terhubung");
+  if (otaInProgress) {
+    lcd.print("OTA: Updating...    ");
+  } else if (deviceConnected) {
+    lcd.print("BLE: Terhubung      ");
+  } else if (apActive) {
+    // Tampilkan IP OTA di baris 3 saat AP aktif
+    String ipStr = "OTA: " + apIPAddress;
+    lcd.print(ipStr.substring(0, 20)); // Potong agar muat 20 char
   } else {
     lcd.print(bleMacAddress);
   }
+}
+
+void updateLCDOTA(int progress) {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("** OTA UPDATE **    ");
+  lcd.setCursor(0, 1);
+  lcd.print("Progress: ");
+  lcd.print(progress);
+  lcd.print("%        ");
+  lcd.setCursor(0, 2);
+  lcd.print("Jangan cabut daya!  ");
+  lcd.setCursor(0, 3);
+  lcd.print("IP: " + apIPAddress);
 }
 
 // ==========================================
@@ -275,6 +343,15 @@ void readSensors() {
 // NEOPIXEL DYNAMIC WAVE
 // ==========================================
 void updateNeoPixelWave(unsigned long currentTime) {
+  // Warna kuning berkedip saat OTA berlangsung
+  if (otaInProgress) {
+    bool ledState = (currentTime / 150) % 2 == 0;
+    pixels.setPixelColor(0, ledState ? pixels.Color(255, 165, 0)
+                                     : pixels.Color(0, 0, 0));
+    pixels.show();
+    return;
+  }
+
   if (hardwareError) {
     // Berkedip merah lambat (Peringatan santai 500ms on/off)
     bool ledState = (currentTime / 500) % 2 == 0;
@@ -290,10 +367,131 @@ void updateNeoPixelWave(unsigned long currentTime) {
 
   if (deviceConnected) {
     pixels.setPixelColor(0, pixels.Color(0, brightness, 0)); // Gelombang Hijau
+  } else if (apActive) {
+    pixels.setPixelColor(
+        0, pixels.Color(brightness / 2, 0, brightness)); // Ungu saat AP aktif
   } else {
     pixels.setPixelColor(0, pixels.Color(0, 0, brightness)); // Gelombang Biru
   }
   pixels.show();
+}
+
+// ==========================================
+// WIFI & OTA SETUP
+// ==========================================
+void setupWiFiAndOTA() {
+  Serial.println("📶 Membuat Access Point WiFi...");
+  Serial.print("   AP SSID    : ");
+  Serial.println(AP_SSID);
+  Serial.print("   AP Password: ");
+  Serial.println(AP_PASSWORD);
+
+  lcd.setCursor(0, 3);
+  lcd.print("WiFi AP: Starting...");
+
+  // Mode AP: ESP32 membuat hotspot sendiri
+  WiFi.mode(WIFI_AP);
+
+  // Set IP Address AP custom
+  IPAddress apLocalIP(23, 23, 23, 1);
+  IPAddress apGateway(23, 23, 23, 1);
+  IPAddress apSubnet(255, 255, 255, 0);
+  WiFi.softAPConfig(apLocalIP, apGateway, apSubnet);
+
+  bool apStarted;
+  if (strlen(AP_PASSWORD) >= 8) {
+    apStarted = WiFi.softAP(AP_SSID, AP_PASSWORD);
+  } else {
+    apStarted = WiFi.softAP(AP_SSID); // Open AP jika password < 8 karakter
+  }
+
+  if (apStarted) {
+    apActive = true;
+    apIPAddress = WiFi.softAPIP().toString(); // Custom: 23.23.23.1
+    Serial.print("✅ Access Point Aktif! IP: ");
+    Serial.println(apIPAddress);
+
+    // Tampilkan IP AP di LCD sebentar
+    lcd.setCursor(0, 3);
+    String ipShow = "AP:" + apIPAddress + "     ";
+    lcd.print(ipShow.substring(0, 20));
+
+    // ---- Setup ElegantOTA ----
+    // Halaman root → informasi singkat esp32
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+      String html =
+          "<html><body style='font-family:sans-serif;text-align:center;'>";
+      html += "<h2>E-Posyandu ESP32</h2>";
+      html += "<p>Berat : <b>" + String(currentWeight, 2) + " kg</b></p>";
+      html += "<p>Tinggi: <b>" + String(currentHeight, 1) + " cm</b></p>";
+      html += "<p><a href='/update'>OTA Firmware Update</a></p>";
+      html += "</body></html>";
+      request->send(200, "text/html", html);
+    });
+
+    // Aktifkan ElegantOTA dengan autentikasi username:password
+    ElegantOTA.begin(&server, OTA_USERNAME, OTA_PASSWORD);
+
+    // Callback saat OTA mulai
+    ElegantOTA.onStart([]() {
+      otaInProgress = true;
+      otaStartTime = millis();
+      Serial.println("\n🚀 OTA Update DIMULAI!");
+      updateLCDOTA(0);
+    });
+
+    // Callback progress OTA
+    ElegantOTA.onProgress([](size_t current, size_t total) {
+      int pct = (int)((current * 100) / total);
+      Serial.printf("   OTA Progress: %d%%\n", pct);
+      updateLCDOTA(pct);
+    });
+
+    // Callback saat OTA selesai
+    ElegantOTA.onEnd([](bool success) {
+      if (success) {
+        Serial.println("✅ OTA Update BERHASIL! Restarting...");
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("OTA BERHASIL!       ");
+        lcd.setCursor(0, 1);
+        lcd.print("Restarting ESP32... ");
+        pixels.setPixelColor(0, pixels.Color(0, 255, 0)); // Hijau solid
+        pixels.show();
+      } else {
+        Serial.println("❌ OTA Update GAGAL!");
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("OTA GAGAL!          ");
+        lcd.setCursor(0, 1);
+        lcd.print("Coba upload ulang.  ");
+        pixels.setPixelColor(0, pixels.Color(255, 0, 0)); // Merah solid
+        pixels.show();
+      }
+      otaInProgress = false;
+      delay(2000);
+    });
+
+    server.begin();
+    Serial.println("🌐 Web Server OTA aktif!");
+    Serial.print("   Sambungkan HP/Laptop ke WiFi: ");
+    Serial.println(AP_SSID);
+    Serial.print("   Buka browser: http://");
+    Serial.print(apIPAddress);
+    Serial.println("/update");
+    Serial.print("   Username: ");
+    Serial.print(OTA_USERNAME);
+    Serial.print(" | Password: ");
+    Serial.println(OTA_PASSWORD);
+
+  } else {
+    apActive = false;
+    Serial.println("⚠️ Gagal membuat Access Point! OTA tidak tersedia.");
+    Serial.println("   → BLE & sensor tetap berfungsi normal.");
+    lcd.setCursor(0, 3);
+    lcd.print("AP: Gagal (OTA off) ");
+    delay(1500);
+  }
 }
 
 // ==========================================
@@ -302,7 +500,7 @@ void updateNeoPixelWave(unsigned long currentTime) {
 void setup() {
   Serial.begin(115200);
   Serial.println("\n====================================");
-  Serial.println("  E-POSYANDU Real Sensors (BLE)");
+  Serial.println("  E-POSYANDU Real Sensors (BLE+OTA)");
   Serial.println("====================================");
 
   // Init LED RGB (Brightness & Color diatur otomatis oleh dynamic wave di loop)
@@ -344,7 +542,7 @@ void setup() {
   lcd.init();
   lcd.backlight();
   lcd.setCursor(0, 0);
-  lcd.print(" Inisialisasi... ");
+  lcd.print(" Inisialisasi...    ");
 
   // Init Load Cell HX711 (non-blocking, timeout 3 detik)
   Serial.println("⚖️ Initializing Load Cell HX711...");
@@ -382,7 +580,7 @@ void setup() {
   if (!sensorHeight.init()) {
     Serial.println("   ❌ Gagal mendeteksi VL53L0X di 0x29!");
     lcd.setCursor(0, 1);
-    lcd.print("VL53L0X Error!");
+    lcd.print("VL53L0X Error!      ");
     hardwareError = true;
     vl53l0xReady = false;
   } else {
@@ -394,6 +592,9 @@ void setup() {
     Serial.println("   ✅ VL53L0X Siap di 0x29 (Burst Mode)!");
     vl53l0xReady = true;
   }
+
+  // Init WiFi & ElegantOTA
+  setupWiFiAndOTA();
 
   // Init BLE
   Serial.println("🔧 Initializing BLE...");
@@ -424,11 +625,16 @@ void setup() {
 
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Sistem Siap!");
+  lcd.print("Sistem Siap!        ");
   lcd.setCursor(0, 1);
   lcd.print("MAC:");
   lcd.setCursor(0, 2);
   lcd.print(bleMacAddress);
+  if (apActive) {
+    lcd.setCursor(0, 3);
+    String ipShow = "OTA:" + apIPAddress;
+    lcd.print(ipShow.substring(0, 20));
+  }
   delay(2000);
   updateLCD("WAITING");
 }
@@ -438,6 +644,15 @@ void setup() {
 // ==========================================
 void loop() {
   unsigned long currentTime = millis();
+
+  // Handle ElegantOTA (wajib dipanggil di loop agar OTA bisa berjalan)
+  ElegantOTA.loop();
+
+  // Jika OTA sedang berjalan, tunda logika sensor & BLE
+  if (otaInProgress) {
+    updateNeoPixelWave(currentTime);
+    return; // Skip semua proses lain saat OTA
+  }
 
   // Jalankan animasi wave / breathing pada NeoPixel
   updateNeoPixelWave(currentTime);
@@ -467,6 +682,16 @@ void loop() {
       Serial.print(" kg, Tinggi: ");
       Serial.print(currentHeight, 1);
       Serial.println(" cm");
+
+      // Tampilkan info OTA di Serial jika AP aktif
+      if (apActive) {
+        Serial.print("🌐 OTA URL: http://");
+        Serial.print(apIPAddress);
+        Serial.println("/update");
+        Serial.print("   (Sambungkan ke WiFi: ");
+        Serial.print(AP_SSID);
+        Serial.println(")");
+      }
     }
 
     lastSendTime = currentTime;

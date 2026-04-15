@@ -943,7 +943,9 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                   : CustomPaint(
                       painter: _KmsChartPainter(
                         riwayat: riwayat ?? [],
-                        whoRef: KmsHelper.getReference(isGirl ? 'P' : 'L'),
+                        whoRef: _showWeight
+                            ? KmsHelper.getReference(isGirl ? 'P' : 'L')
+                            : KmsHelper.getHeightReference(isGirl ? 'P' : 'L'),
                         showWeight: _showWeight,
                       ),
                       child: const SizedBox.expand(),
@@ -956,10 +958,12 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _legend(AppTheme.primary, 'Data Anak'),
-                  const SizedBox(width: 16),
-                  _legend(Colors.green.shade300, 'Normal'),
-                  const SizedBox(width: 16),
-                  _legend(Colors.red.shade300, 'Batas'),
+                  if (_showWeight) ...[
+                    const SizedBox(width: 16),
+                    _legend(Colors.green.shade300, 'Normal'),
+                    const SizedBox(width: 16),
+                    _legend(Colors.red.shade300, 'Batas'),
+                  ],
                 ],
               ),
             ),
@@ -1325,7 +1329,7 @@ class _KmsChartPainter extends CustomPainter {
       final v = showWeight ? (r.berat ?? 0) : (r.tinggi ?? 0);
       if (v > 0) allValues.add(v);
     }
-    // Tambahkan semua titik referensi WHO (hanya relevan untuk berat)
+    // Tambahkan semua titik referensi WHO hanya untuk Berat (Tinggi tidak pakai KMS)
     if (showWeight) {
       for (final refs in whoRef.values) {
         allValues.addAll(refs);
@@ -1398,6 +1402,7 @@ class _KmsChartPainter extends CustomPainter {
       canvas.drawPath(path, p);
     }
 
+    // Gambar garis KMS hanya saat mode Berat
     if (showWeight) {
       drawWhoLine(0, Colors.red);
       drawWhoLine(1, Colors.green);

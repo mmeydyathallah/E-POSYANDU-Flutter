@@ -6,7 +6,7 @@ import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../models/models.dart';
 import '../services/ble_service.dart';
-import '../services/app_settings_service.dart';
+*port '../services/app_settings_service.dart';
 import '../services/isar_service.dart';
 import '../widgets/modern_notification.dart';
 
