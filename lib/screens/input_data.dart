@@ -6,7 +6,7 @@ import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../models/models.dart';
 import '../services/ble_service.dart';
-*port '../services/app_settings_service.dart';
+import '../services/app_settings_service.dart';
 import '../services/isar_service.dart';
 import '../widgets/modern_notification.dart';
 
@@ -40,6 +40,8 @@ class _InputDataScreenState extends State<InputDataScreen> {
 
   double _currentWeight = 0.0;
   double _currentHeight = 0.0;
+  double _currentHeadCircumference = 0.0;
+  final TextEditingController _headCircController = TextEditingController();
   bool _isSaving = false;
 
   @override
@@ -131,6 +133,7 @@ class _InputDataScreenState extends State<InputDataScreen> {
     _sub?.cancel();
     _bleService.disconnect();
     _searchController.dispose();
+    _headCircController.dispose();
     super.dispose();
   }
 
@@ -168,6 +171,9 @@ class _InputDataScreenState extends State<InputDataScreen> {
       tanggal: DateTime.now().toIso8601String().substring(0, 10),
       berat: _currentWeight,
       tinggi: _currentHeight,
+      lingkarKepala: _currentHeadCircumference > 0
+          ? _currentHeadCircumference
+          : null,
     );
 
     String status = KmsHelper.calculateDbStatus(
@@ -177,7 +183,11 @@ class _InputDataScreenState extends State<InputDataScreen> {
     _selectedBalita!.keterangan = status;
     await IsarService().addRiwayat(_selectedBalita!, riwayat);
 
-    setState(() => _isSaving = false);
+    setState(() {
+      _isSaving = false;
+      _currentHeadCircumference = 0.0;
+      _headCircController.clear();
+    });
     if (mounted) {
       if (Navigator.canPop(context)) {
         Navigator.pop(context);
@@ -407,6 +417,81 @@ class _InputDataScreenState extends State<InputDataScreen> {
                   ),
                 ],
               ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // --- Input manual Lingkar Kepala ---
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.6)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.radio_button_unchecked,
+                  color: AppTheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 10),
+                const Text(
+                  'LINGKAR KEPALA',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black54,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: 100,
+                  child: TextField(
+                    controller: _headCircController,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black87,
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: '0,0',
+                      hintStyle: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black26,
+                      ),
+                      suffixText: ' cm',
+                      suffixStyle: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black45,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                    onChanged: (val) {
+                      final parsed = double.tryParse(
+                        val.replaceAll(',', '.'),
+                      );
+                      setState(
+                        () => _currentHeadCircumference = parsed ?? 0.0,
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -656,6 +741,45 @@ class _InputDataScreenState extends State<InputDataScreen> {
                               ],
                             ),
                           ),
+                          if (_currentHeadCircumference > 0) ...[
+                            Container(
+                              width: 1,
+                              height: 40,
+                              color: Colors.white24,
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Lingkar Kepala',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.white54,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${_formatDecimal(_currentHeadCircumference)} cm',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Sblm: ${(_selectedBalita?.riwayat?.isNotEmpty ?? false) ? _formatDecimal(_selectedBalita!.riwayat!.last.lingkarKepala ?? 0.0) : _formatDecimal(0.0)} cm',
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.white38,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -821,15 +945,19 @@ class _InputDataScreenState extends State<InputDataScreen> {
                                   blurRadius: 4,
                                 ),
                               ],
-                              image: (balita.fotoProfile != null &&
+                              image:
+                                  (balita.fotoProfile != null &&
                                       balita.fotoProfile!.isNotEmpty)
                                   ? DecorationImage(
-                                      image: FileImage(File(balita.fotoProfile!)),
+                                      image: FileImage(
+                                        File(balita.fotoProfile!),
+                                      ),
                                       fit: BoxFit.cover,
                                     )
                                   : null,
                             ),
-                            child: (balita.fotoProfile == null ||
+                            child:
+                                (balita.fotoProfile == null ||
                                     balita.fotoProfile!.isEmpty)
                                 ? Center(
                                     child: Text(

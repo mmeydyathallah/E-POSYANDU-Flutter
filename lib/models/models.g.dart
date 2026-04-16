@@ -22,69 +22,74 @@ const BalitaSchema = CollectionSchema(
       name: r'berat',
       type: IsarType.double,
     ),
-    r'fotoProfile': PropertySchema(
+    r'displayStatus': PropertySchema(
       id: 1,
+      name: r'displayStatus',
+      type: IsarType.string,
+    ),
+    r'fotoProfile': PropertySchema(
+      id: 2,
       name: r'fotoProfile',
       type: IsarType.string,
     ),
     r'jenisKelamin': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'jenisKelamin',
       type: IsarType.string,
     ),
     r'keterangan': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'keterangan',
       type: IsarType.string,
     ),
     r'lingkarKepala': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'lingkarKepala',
       type: IsarType.double,
     ),
     r'nama': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'nama',
       type: IsarType.string,
     ),
     r'namaAyah': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'namaAyah',
       type: IsarType.string,
     ),
     r'namaIbu': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'namaIbu',
       type: IsarType.string,
     ),
     r'riwayat': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'riwayat',
       type: IsarType.objectList,
       target: r'Riwayat',
     ),
     r'tanggalDaftar': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'tanggalDaftar',
       type: IsarType.string,
     ),
     r'tanggalLahir': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'tanggalLahir',
       type: IsarType.string,
     ),
     r'tinggi': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'tinggi',
       type: IsarType.double,
     ),
     r'uid': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'uid',
       type: IsarType.string,
     ),
     r'usia': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'usia',
       type: IsarType.long,
     )
@@ -123,6 +128,7 @@ int _balitaEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.displayStatus.length * 3;
   {
     final value = object.fotoProfile;
     if (value != null) {
@@ -200,24 +206,25 @@ void _balitaSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDouble(offsets[0], object.berat);
-  writer.writeString(offsets[1], object.fotoProfile);
-  writer.writeString(offsets[2], object.jenisKelamin);
-  writer.writeString(offsets[3], object.keterangan);
-  writer.writeDouble(offsets[4], object.lingkarKepala);
-  writer.writeString(offsets[5], object.nama);
-  writer.writeString(offsets[6], object.namaAyah);
-  writer.writeString(offsets[7], object.namaIbu);
+  writer.writeString(offsets[1], object.displayStatus);
+  writer.writeString(offsets[2], object.fotoProfile);
+  writer.writeString(offsets[3], object.jenisKelamin);
+  writer.writeString(offsets[4], object.keterangan);
+  writer.writeDouble(offsets[5], object.lingkarKepala);
+  writer.writeString(offsets[6], object.nama);
+  writer.writeString(offsets[7], object.namaAyah);
+  writer.writeString(offsets[8], object.namaIbu);
   writer.writeObjectList<Riwayat>(
-    offsets[8],
+    offsets[9],
     allOffsets,
     RiwayatSchema.serialize,
     object.riwayat,
   );
-  writer.writeString(offsets[9], object.tanggalDaftar);
-  writer.writeString(offsets[10], object.tanggalLahir);
-  writer.writeDouble(offsets[11], object.tinggi);
-  writer.writeString(offsets[12], object.uid);
-  writer.writeLong(offsets[13], object.usia);
+  writer.writeString(offsets[10], object.tanggalDaftar);
+  writer.writeString(offsets[11], object.tanggalLahir);
+  writer.writeDouble(offsets[12], object.tinggi);
+  writer.writeString(offsets[13], object.uid);
+  writer.writeLong(offsets[14], object.usia);
 }
 
 Balita _balitaDeserialize(
@@ -228,25 +235,25 @@ Balita _balitaDeserialize(
 ) {
   final object = Balita(
     berat: reader.readDoubleOrNull(offsets[0]),
-    fotoProfile: reader.readStringOrNull(offsets[1]),
+    fotoProfile: reader.readStringOrNull(offsets[2]),
     id: id,
-    jenisKelamin: reader.readStringOrNull(offsets[2]),
-    keterangan: reader.readStringOrNull(offsets[3]),
-    lingkarKepala: reader.readDoubleOrNull(offsets[4]),
-    nama: reader.readStringOrNull(offsets[5]),
-    namaAyah: reader.readStringOrNull(offsets[6]),
-    namaIbu: reader.readStringOrNull(offsets[7]),
+    jenisKelamin: reader.readStringOrNull(offsets[3]),
+    keterangan: reader.readStringOrNull(offsets[4]),
+    lingkarKepala: reader.readDoubleOrNull(offsets[5]),
+    nama: reader.readStringOrNull(offsets[6]),
+    namaAyah: reader.readStringOrNull(offsets[7]),
+    namaIbu: reader.readStringOrNull(offsets[8]),
     riwayat: reader.readObjectList<Riwayat>(
-      offsets[8],
+      offsets[9],
       RiwayatSchema.deserialize,
       allOffsets,
       Riwayat(),
     ),
-    tanggalDaftar: reader.readStringOrNull(offsets[9]),
-    tanggalLahir: reader.readStringOrNull(offsets[10]),
-    tinggi: reader.readDoubleOrNull(offsets[11]),
-    uid: reader.readStringOrNull(offsets[12]),
-    usia: reader.readLongOrNull(offsets[13]),
+    tanggalDaftar: reader.readStringOrNull(offsets[10]),
+    tanggalLahir: reader.readStringOrNull(offsets[11]),
+    tinggi: reader.readDoubleOrNull(offsets[12]),
+    uid: reader.readStringOrNull(offsets[13]),
+    usia: reader.readLongOrNull(offsets[14]),
   );
   return object;
 }
@@ -261,35 +268,37 @@ P _balitaDeserializeProp<P>(
     case 0:
       return (reader.readDoubleOrNull(offset)) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
-      return (reader.readDoubleOrNull(offset)) as P;
-    case 5:
       return (reader.readStringOrNull(offset)) as P;
+    case 5:
+      return (reader.readDoubleOrNull(offset)) as P;
     case 6:
       return (reader.readStringOrNull(offset)) as P;
     case 7:
       return (reader.readStringOrNull(offset)) as P;
     case 8:
+      return (reader.readStringOrNull(offset)) as P;
+    case 9:
       return (reader.readObjectList<Riwayat>(
         offset,
         RiwayatSchema.deserialize,
         allOffsets,
         Riwayat(),
       )) as P;
-    case 9:
-      return (reader.readStringOrNull(offset)) as P;
     case 10:
       return (reader.readStringOrNull(offset)) as P;
     case 11:
-      return (reader.readDoubleOrNull(offset)) as P;
-    case 12:
       return (reader.readStringOrNull(offset)) as P;
+    case 12:
+      return (reader.readDoubleOrNull(offset)) as P;
     case 13:
+      return (reader.readStringOrNull(offset)) as P;
+    case 14:
       return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -575,6 +584,137 @@ extension BalitaQueryFilter on QueryBuilder<Balita, Balita, QFilterCondition> {
         upper: upper,
         includeUpper: includeUpper,
         epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterFilterCondition> displayStatusEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'displayStatus',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterFilterCondition> displayStatusGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'displayStatus',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterFilterCondition> displayStatusLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'displayStatus',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterFilterCondition> displayStatusBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'displayStatus',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterFilterCondition> displayStatusStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'displayStatus',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterFilterCondition> displayStatusEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'displayStatus',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterFilterCondition> displayStatusContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'displayStatus',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterFilterCondition> displayStatusMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'displayStatus',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterFilterCondition> displayStatusIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'displayStatus',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterFilterCondition>
+      displayStatusIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'displayStatus',
+        value: '',
       ));
     });
   }
@@ -2292,6 +2432,18 @@ extension BalitaQuerySortBy on QueryBuilder<Balita, Balita, QSortBy> {
     });
   }
 
+  QueryBuilder<Balita, Balita, QAfterSortBy> sortByDisplayStatus() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'displayStatus', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterSortBy> sortByDisplayStatusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'displayStatus', Sort.desc);
+    });
+  }
+
   QueryBuilder<Balita, Balita, QAfterSortBy> sortByFotoProfile() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'fotoProfile', Sort.asc);
@@ -2447,6 +2599,18 @@ extension BalitaQuerySortThenBy on QueryBuilder<Balita, Balita, QSortThenBy> {
   QueryBuilder<Balita, Balita, QAfterSortBy> thenByBeratDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'berat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterSortBy> thenByDisplayStatus() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'displayStatus', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Balita, Balita, QAfterSortBy> thenByDisplayStatusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'displayStatus', Sort.desc);
     });
   }
 
@@ -2614,6 +2778,14 @@ extension BalitaQueryWhereDistinct on QueryBuilder<Balita, Balita, QDistinct> {
     });
   }
 
+  QueryBuilder<Balita, Balita, QDistinct> distinctByDisplayStatus(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'displayStatus',
+          caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Balita, Balita, QDistinct> distinctByFotoProfile(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -2707,6 +2879,12 @@ extension BalitaQueryProperty on QueryBuilder<Balita, Balita, QQueryProperty> {
   QueryBuilder<Balita, double?, QQueryOperations> beratProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'berat');
+    });
+  }
+
+  QueryBuilder<Balita, String, QQueryOperations> displayStatusProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'displayStatus');
     });
   }
 
@@ -3661,13 +3839,18 @@ const RiwayatSchema = Schema(
       name: r'berat',
       type: IsarType.double,
     ),
-    r'tanggal': PropertySchema(
+    r'lingkarKepala': PropertySchema(
       id: 1,
+      name: r'lingkarKepala',
+      type: IsarType.double,
+    ),
+    r'tanggal': PropertySchema(
+      id: 2,
       name: r'tanggal',
       type: IsarType.string,
     ),
     r'tinggi': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'tinggi',
       type: IsarType.double,
     )
@@ -3700,8 +3883,9 @@ void _riwayatSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDouble(offsets[0], object.berat);
-  writer.writeString(offsets[1], object.tanggal);
-  writer.writeDouble(offsets[2], object.tinggi);
+  writer.writeDouble(offsets[1], object.lingkarKepala);
+  writer.writeString(offsets[2], object.tanggal);
+  writer.writeDouble(offsets[3], object.tinggi);
 }
 
 Riwayat _riwayatDeserialize(
@@ -3712,8 +3896,9 @@ Riwayat _riwayatDeserialize(
 ) {
   final object = Riwayat(
     berat: reader.readDoubleOrNull(offsets[0]),
-    tanggal: reader.readStringOrNull(offsets[1]),
-    tinggi: reader.readDoubleOrNull(offsets[2]),
+    lingkarKepala: reader.readDoubleOrNull(offsets[1]),
+    tanggal: reader.readStringOrNull(offsets[2]),
+    tinggi: reader.readDoubleOrNull(offsets[3]),
   );
   return object;
 }
@@ -3728,8 +3913,10 @@ P _riwayatDeserializeProp<P>(
     case 0:
       return (reader.readDoubleOrNull(offset)) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDoubleOrNull(offset)) as P;
     case 2:
+      return (reader.readStringOrNull(offset)) as P;
+    case 3:
       return (reader.readDoubleOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -3807,6 +3994,86 @@ extension RiwayatQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'berat',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Riwayat, Riwayat, QAfterFilterCondition> lingkarKepalaIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'lingkarKepala',
+      ));
+    });
+  }
+
+  QueryBuilder<Riwayat, Riwayat, QAfterFilterCondition>
+      lingkarKepalaIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'lingkarKepala',
+      ));
+    });
+  }
+
+  QueryBuilder<Riwayat, Riwayat, QAfterFilterCondition> lingkarKepalaEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lingkarKepala',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Riwayat, Riwayat, QAfterFilterCondition>
+      lingkarKepalaGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lingkarKepala',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Riwayat, Riwayat, QAfterFilterCondition> lingkarKepalaLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lingkarKepala',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Riwayat, Riwayat, QAfterFilterCondition> lingkarKepalaBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lingkarKepala',
         lower: lower,
         includeLower: includeLower,
         upper: upper,

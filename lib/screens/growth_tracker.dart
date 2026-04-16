@@ -20,9 +20,10 @@ class GrowthTrackerScreen extends StatefulWidget {
 
 class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   final int _currentIndex = 2;
-  bool _showWeight = true;
   bool _isDetailView = false;
   bool _isSaving = false;
+  // 0 = Berat, 1 = Tinggi, 2 = Lingkar Kepala
+  int _chartTab = 0;
 
   List<Balita> _listBalita = [];
   Balita? _selected;
@@ -35,6 +36,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
 
   final TextEditingController _manualWeightController = TextEditingController();
   final TextEditingController _manualHeightController = TextEditingController();
+  final TextEditingController _manualHcController = TextEditingController();
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isManualInput = false;
 
@@ -89,6 +91,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
     _sensorSub?.cancel();
     _manualWeightController.dispose();
     _manualHeightController.dispose();
+    _manualHcController.dispose();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -271,6 +274,13 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                         ),
                       ],
                     ),
+                  const SizedBox(height: 16),
+                  _buildManualTextField(
+                    controller: _manualHcController,
+                    label: 'Lingkar Kepala',
+                    unit: 'cm',
+                    icon: Icons.radio_button_unchecked,
+                  ),
                   const SizedBox(height: 32),
                   FilledButton(
                     onPressed: _isSaving
@@ -448,6 +458,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
 
     double weight = 0.0;
     double height = 0.0;
+    double headCirc = 0.0;
 
     if (isManual) {
       String wStr = _manualWeightController.text.replaceAll(',', '.');
@@ -467,10 +478,14 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
       height = _currentSensorHeight;
     }
 
+    String hcStr = _manualHcController.text.replaceAll(',', '.');
+    headCirc = double.tryParse(hcStr) ?? 0.0;
+
     final riwayat = Riwayat(
       tanggal: DateTime.now().toIso8601String().substring(0, 10),
       berat: weight,
       tinggi: height,
+      lingkarKepala: headCirc > 0 ? headCirc : null,
     );
 
     _selected!.berat = weight;
@@ -479,6 +494,12 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
     _selected!.keterangan = status;
 
     await IsarService().addRiwayat(_selected!, riwayat);
+
+    if (isManual) {
+      _manualWeightController.clear();
+      _manualHeightController.clear();
+    }
+    _manualHcController.clear();
 
     if (mounted) {
       ModernNotification.show(
@@ -804,32 +825,60 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   }
 
   Widget _buildCurrentStats() {
+    final riwayat = _selected!.riwayat ?? [];
+    final lastLk = riwayat.isNotEmpty
+        ? riwayat.last.lingkarKepala
+        : null;
+    final prevLk = riwayat.length >= 2
+        ? riwayat[riwayat.length - 2].lingkarKepala
+        : null;
+    String lkTrend = '';
+    if (lastLk != null && prevLk != null) {
+      if (lastLk > prevLk) lkTrend = ' ↑';
+      else if (lastLk < prevLk) lkTrend = ' ↓';
+      else lkTrend = ' →';
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: _buildStatCard(
-              'Berat Badan',
-              '${_formatDecimal(_selected!.berat ?? 0.0)} kg',
-              Icons.monitor_weight_outlined,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  'Berat Badan',
+                  '${_formatDecimal(_selected!.berat ?? 0.0)} kg',
+                  Icons.monitor_weight_outlined,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildStatCard(
+                  'Tinggi Badan',
+                  '${_formatDecimal(_selected!.tinggi ?? 0.0)} cm',
+                  Icons.straighten_outlined,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _buildStatCard(
-              'Tinggi Badan',
-              '${_formatDecimal(_selected!.tinggi ?? 0.0)} cm',
-              Icons.straighten_outlined,
+          if (lastLk != null) ...[
+            const SizedBox(height: 12),
+            _buildStatCard(
+              'Lingkar Kepala$lkTrend',
+              '${_formatDecimal(lastLk)} cm',
+              Icons.radio_button_unchecked,
+              fullWidth: true,
             ),
-          ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon) {
+  Widget _buildStatCard(String title, String value, IconData icon,
+      {bool fullWidth = false}) {
     return Container(
+      width: fullWidth ? double.infinity : null,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -870,6 +919,8 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   Widget _buildKmsChartSection() {
     final riwayat = _selected!.riwayat;
     final isGirl = _selected!.jenisKelamin == 'P';
+    final hasLkData =
+        riwayat?.any((r) => (r.lingkarKepala ?? 0) > 0) ?? false;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
@@ -889,7 +940,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Grafik KMS',
+                      'Grafik Pertumbuhan',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -904,31 +955,39 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                     ),
                   ],
                 ),
-                SegmentedButton<bool>(
-                  segments: const [
-                    ButtonSegment(
-                      value: true,
-                      label: Text('Berat'),
-                      icon: Icon(Icons.monitor_weight),
-                    ),
-                    ButtonSegment(
-                      value: false,
-                      label: Text('Tinggi'),
-                      icon: Icon(Icons.straighten),
-                    ),
-                  ],
-                  selected: {_showWeight},
-                  onSelectionChanged: (newSelection) {
-                    setState(() {
-                      _showWeight = newSelection.first;
-                    });
-                  },
-                  showSelectedIcon: false,
-                  style: const ButtonStyle(
-                    visualDensity: VisualDensity.compact,
-                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // Tab selector
+            SegmentedButton<int>(
+              segments: [
+                const ButtonSegment(
+                  value: 0,
+                  label: Text('Berat'),
+                  icon: Icon(Icons.monitor_weight),
+                ),
+                const ButtonSegment(
+                  value: 1,
+                  label: Text('Tinggi'),
+                  icon: Icon(Icons.straighten),
+                ),
+                ButtonSegment(
+                  value: 2,
+                  label: const Text('LK'),
+                  icon: const Icon(Icons.radio_button_unchecked),
+                  enabled: hasLkData,
                 ),
               ],
+              selected: {_chartTab},
+              onSelectionChanged: (newSelection) {
+                setState(() {
+                  _chartTab = newSelection.first;
+                });
+              },
+              showSelectedIcon: false,
+              style: const ButtonStyle(
+                visualDensity: VisualDensity.compact,
+              ),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -940,13 +999,28 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                         style: TextStyle(color: Colors.black38),
                       ),
                     )
+                  : _chartTab == 2
+                  ? (!hasLkData
+                      ? const Center(
+                          child: Text(
+                            'Belum ada data lingkar kepala',
+                            style: TextStyle(color: Colors.black38),
+                          ),
+                        )
+                      : CustomPaint(
+                          painter: _HcChartPainter(
+                            riwayat: riwayat ?? [],
+                          ),
+                          child: const SizedBox.expand(),
+                        ))
                   : CustomPaint(
                       painter: _KmsChartPainter(
                         riwayat: riwayat ?? [],
-                        whoRef: _showWeight
+                        whoRef: _chartTab == 0
                             ? KmsHelper.getReference(isGirl ? 'P' : 'L')
-                            : KmsHelper.getHeightReference(isGirl ? 'P' : 'L'),
-                        showWeight: _showWeight,
+                            : KmsHelper.getHeightReference(
+                                isGirl ? 'P' : 'L'),
+                        showWeight: _chartTab == 0,
                       ),
                       child: const SizedBox.expand(),
                     ),
@@ -958,7 +1032,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _legend(AppTheme.primary, 'Data Anak'),
-                  if (_showWeight) ...[
+                  if (_chartTab == 0) ...[
                     const SizedBox(width: 16),
                     _legend(Colors.green.shade300, 'Normal'),
                     const SizedBox(width: 16),
@@ -1069,6 +1143,18 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                       Expanded(
                         flex: 1,
                         child: Text(
+                          'LK',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                            color: Colors.black54,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Text(
                           'Hapus',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -1115,6 +1201,16 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                           flex: 1,
                           child: Text(
                             '${r.tinggi}',
+                            style: const TextStyle(fontSize: 11),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Text(
+                            r.lingkarKepala != null
+                                ? _formatDecimal(r.lingkarKepala!)
+                                : '-',
                             style: const TextStyle(fontSize: 11),
                             textAlign: TextAlign.center,
                           ),
@@ -1414,15 +1510,20 @@ class _KmsChartPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
     final path = Path();
+    bool isFirstPoint = true;
     for (int i = 0; i < riwayat.length; i++) {
       try {
+        final v = showWeight ? riwayat[i].berat : riwayat[i].tinggi;
+        if (v == null || v <= 0) continue;
+
         DateTime dt = DateTime.parse(riwayat[i].tanggal!);
         DateTime start = DateTime.parse(riwayat.first.tanggal!);
         int months = (dt.difference(start).inDays / 30).floor().clamp(0, 60);
-        double x = xOf(months),
-            y = yOf(showWeight ? riwayat[i].berat! : riwayat[i].tinggi!);
-        if (i == 0) {
+        double x = xOf(months), y = yOf(v);
+        
+        if (isFirstPoint) {
           path.moveTo(x, y);
+          isFirstPoint = false;
         } else {
           path.lineTo(x, y);
         }
@@ -1453,6 +1554,98 @@ class _KmsChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _KmsChartPainter old) => true;
+}
+
+// ──────────────────────────────────────────────
+// HC (Lingkar Kepala) Tren Chart — tanpa referensi WHO
+// ──────────────────────────────────────────────
+class _HcChartPainter extends CustomPainter {
+  final List<Riwayat> riwayat;
+  _HcChartPainter({required this.riwayat});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Kumpulkan data LK yang valid
+    final lkData = riwayat
+        .where((r) => (r.lingkarKepala ?? 0) > 0 && r.tanggal != null)
+        .toList();
+    if (lkData.isEmpty) return;
+
+    const double padL = 35, padR = 10, padT = 10, padB = 25;
+    final double chartW = size.width - padL - padR;
+    final double chartH = size.height - padT - padB;
+
+    // Autoscale
+    final allLk = lkData.map((r) => r.lingkarKepala!).toList();
+    final rawMin = allLk.reduce(math.min);
+    final rawMax = allLk.reduce(math.max);
+    final pad = (rawMax - rawMin) * 0.2 + 1.0;
+    final minY = (rawMin - pad).clamp(0.0, double.infinity);
+    final maxY = rawMax + pad;
+    final rangeY = (maxY - minY) > 0 ? (maxY - minY) : 1.0;
+
+    // Sumbu X berdasarkan urutan kunjungan (0..n-1)
+    final n = lkData.length;
+    double xOf(int i) => padL + (n <= 1 ? 0.5 : i / (n - 1)) * chartW;
+    double yOf(double v) => padT + (1 - (v - minY) / rangeY) * chartH;
+
+    // Grid horizontal
+    final gridPaint = Paint()
+      ..color = Colors.grey.shade100
+      ..strokeWidth = 1;
+    for (int yi = 0; yi <= 5; yi++) {
+      double dy = padT + (yi / 5) * chartH;
+      canvas.drawLine(Offset(padL, dy), Offset(padL + chartW, dy), gridPaint);
+      final labelVal = maxY - (yi / 5) * rangeY;
+      final labelStr = labelVal.toStringAsFixed(1);
+      TextPainter(
+        text: TextSpan(
+          text: labelStr,
+          style: const TextStyle(fontSize: 8, color: Colors.black38),
+        ),
+        textDirection: TextDirection.ltr,
+      )
+        ..layout()
+        ..paint(canvas, Offset(5, dy - 6));
+    }
+
+    // Data points & garis
+    final linePaint = Paint()
+      ..color = AppTheme.primary
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    final path = Path();
+    for (int i = 0; i < lkData.length; i++) {
+      final x = xOf(i);
+      final y = yOf(lkData[i].lingkarKepala!);
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+      canvas.drawCircle(Offset(x, y), 4, Paint()..color = Colors.white);
+      canvas.drawCircle(Offset(x, y), 3, Paint()..color = AppTheme.primary);
+
+      // Label tanggal di bawah
+      final label = (lkData[i].tanggal ?? '').length >= 7
+          ? lkData[i].tanggal!.substring(5) // MM-DD
+          : (lkData[i].tanggal ?? '');
+      TextPainter(
+        text: TextSpan(
+          text: label,
+          style: const TextStyle(fontSize: 7, color: Colors.black38),
+        ),
+        textDirection: TextDirection.ltr,
+      )
+        ..layout()
+        ..paint(canvas, Offset(x - 12, size.height - 18));
+    }
+    canvas.drawPath(path, linePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _HcChartPainter old) => true;
 }
 
 class _BalitaSearchSheet extends StatefulWidget {

@@ -102,6 +102,9 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                   '${b.usia ?? 0} Bln',
                   (r.berat ?? 0.0).toStringAsFixed(1),
                   (r.tinggi ?? 0.0).toStringAsFixed(1),
+                  r.lingkarKepala != null
+                      ? r.lingkarKepala!.toStringAsFixed(1)
+                      : '-',
                   b.displayStatus,
                 ]);
                 no++;
@@ -134,6 +137,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                     'Usia',
                     'BB',
                     'TB',
+                    'LK',
                     'Status',
                   ],
                   headerStyle: pw.TextStyle(
@@ -152,9 +156,10 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                     2: const pw.FlexColumnWidth(3),
                     3: const pw.FixedColumnWidth(25),
                     4: const pw.FixedColumnWidth(35),
-                    5: const pw.FixedColumnWidth(30),
-                    6: const pw.FixedColumnWidth(30),
-                    7: const pw.FixedColumnWidth(55),
+                    5: const pw.FixedColumnWidth(28),
+                    6: const pw.FixedColumnWidth(28),
+                    7: const pw.FixedColumnWidth(28),
+                    8: const pw.FixedColumnWidth(48),
                   },
                 ),
             ],
@@ -233,6 +238,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                               'Tanggal',
                               'Berat (kg)',
                               'Tinggi (cm)',
+                              'LK (cm)',
                               'Status',
                             ],
                             data: b.riwayat!
@@ -241,6 +247,9 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                                     r.tanggal ?? '-',
                                     (r.berat ?? 0.0).toStringAsFixed(1),
                                     (r.tinggi ?? 0.0).toStringAsFixed(1),
+                                    r.lingkarKepala != null
+                                        ? r.lingkarKepala!.toStringAsFixed(1)
+                                        : '-',
                                     b.displayStatus,
                                   ],
                                 )
@@ -476,6 +485,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
           'Usia',
           'BB (kg)',
           'TB (cm)',
+          'LK (cm)',
           'Status',
         ];
         for (int c = 0; c < headers.length; c++) {
@@ -515,6 +525,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                   '${b.usia ?? 0} Bln',
                   (r.berat ?? 0.0).toStringAsFixed(1),
                   (r.tinggi ?? 0.0).toStringAsFixed(1),
+                  r.lingkarKepala != null ? r.lingkarKepala!.toStringAsFixed(1) : '-',
                   b.displayStatus,
                 ];
                 for (int c = 0; c < rowData.length; c++) {
@@ -543,7 +554,8 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
         sheet.setColumnWidth(4, 10);
         sheet.setColumnWidth(5, 10);
         sheet.setColumnWidth(6, 10);
-        sheet.setColumnWidth(7, 18);
+        sheet.setColumnWidth(7, 10);
+        sheet.setColumnWidth(8, 18);
       } else {
         // ── Daftar Master Balita ───────────────────────────────────────────
         final sheet = excel['Daftar Master Balita'];
@@ -626,8 +638,8 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
               'Tanggal',
               'Berat (kg)',
               'Tinggi (cm)',
+              'LK (cm)',
               'Status',
-              '',
               '',
             ];
             for (int c = 0; c < subHeaders.length; c++) {
@@ -643,6 +655,9 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                 r.tanggal ?? '-',
                 (r.berat ?? 0.0).toStringAsFixed(1),
                 (r.tinggi ?? 0.0).toStringAsFixed(1),
+                r.lingkarKepala != null
+                    ? r.lingkarKepala!.toStringAsFixed(1)
+                    : '-',
                 b.displayStatus,
               ];
               for (int c = 0; c < rd.length; c++) {

@@ -8,19 +8,28 @@ class Riwayat {
   String? tanggal;
   double? berat;
   double? tinggi;
+  double? lingkarKepala;
 
-  Riwayat({this.tanggal, this.berat, this.tinggi});
+  Riwayat({this.tanggal, this.berat, this.tinggi, this.lingkarKepala});
 
   factory Riwayat.fromJson(Map<dynamic, dynamic> json) {
     return Riwayat(
       tanggal: json['tanggal'],
       berat: (json['berat'] ?? 0).toDouble(),
       tinggi: (json['tinggi'] ?? 0).toDouble(),
+      lingkarKepala: json['lingkarKepala'] != null
+          ? (json['lingkarKepala']).toDouble()
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'tanggal': tanggal, 'berat': berat, 'tinggi': tinggi};
+    return {
+      'tanggal': tanggal,
+      'berat': berat,
+      'tinggi': tinggi,
+      'lingkarKepala': lingkarKepala,
+    };
   }
 }
 
