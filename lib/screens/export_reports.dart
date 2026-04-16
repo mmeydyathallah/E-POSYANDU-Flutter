@@ -178,12 +178,13 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
               for (var b in balitas) {
                 content.add(
                   pw.Container(
-                    margin: const pw.EdgeInsets.only(bottom: 15),
+                    margin: const pw.EdgeInsets.only(top: 15),
                     padding: const pw.EdgeInsets.all(10),
                     decoration: pw.BoxDecoration(
-                      border: pw.Border.all(color: PdfColors.grey300),
-                      borderRadius: const pw.BorderRadius.all(
-                        pw.Radius.circular(8),
+                      color: PdfColors.green50,
+                      border: pw.Border.all(color: PdfColors.green300),
+                      borderRadius: const pw.BorderRadius.vertical(
+                        top: pw.Radius.circular(8),
                       ),
                     ),
                     child: pw.Column(
@@ -214,7 +215,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                             color: PdfColors.grey700,
                           ),
                         ),
-                        pw.Divider(thickness: 0.5, color: PdfColors.grey200),
+                        pw.Divider(thickness: 0.5, color: PdfColors.grey300),
                         pw.SizedBox(height: 5),
                         pw.Text(
                           'Riwayat Perkembangan:',
@@ -223,52 +224,64 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
                             fontSize: 9,
                           ),
                         ),
-                        pw.SizedBox(height: 5),
-                        if (b.riwayat == null || b.riwayat!.isEmpty)
-                          pw.Text(
-                            'Belum ada riwayat terekam.',
-                            style: const pw.TextStyle(
-                              fontSize: 8,
-                              color: PdfColors.grey500,
-                            ),
-                          )
-                        else
-                          pw.TableHelper.fromTextArray(
-                            headers: [
-                              'Tanggal',
-                              'Berat (kg)',
-                              'Tinggi (cm)',
-                              'LK (cm)',
-                              'Status',
-                            ],
-                            data: b.riwayat!
-                                .map(
-                                  (r) => [
-                                    r.tanggal ?? '-',
-                                    (r.berat ?? 0.0).toStringAsFixed(1),
-                                    (r.tinggi ?? 0.0).toStringAsFixed(1),
-                                    r.lingkarKepala != null
-                                        ? r.lingkarKepala!.toStringAsFixed(1)
-                                        : '-',
-                                    b.displayStatus,
-                                  ],
-                                )
-                                .toList(),
-                            headerStyle: pw.TextStyle(
-                              fontWeight: pw.FontWeight.bold,
-                              fontSize: 8,
-                            ),
-                            cellStyle: const pw.TextStyle(fontSize: 8),
-                            cellHeight: 15,
-                            border: null,
-                            headerDecoration: const pw.BoxDecoration(
-                              color: PdfColors.grey100,
-                            ),
-                          ),
                       ],
                     ),
                   ),
                 );
+
+                if (b.riwayat == null || b.riwayat!.isEmpty) {
+                  content.add(
+                    pw.Container(
+                      padding: const pw.EdgeInsets.all(10),
+                      decoration: pw.BoxDecoration(
+                        border: pw.Border.all(color: PdfColors.grey300),
+                        borderRadius: const pw.BorderRadius.vertical(
+                          bottom: pw.Radius.circular(8),
+                        ),
+                      ),
+                      child: pw.Text(
+                        'Belum ada riwayat terekam.',
+                        style: const pw.TextStyle(
+                          fontSize: 8,
+                          color: PdfColors.grey500,
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  content.add(
+                    pw.TableHelper.fromTextArray(
+                      headers: [
+                        'Tanggal',
+                        'Berat (kg)',
+                        'Tinggi (cm)',
+                        'LK (cm)',
+                        'Status',
+                      ],
+                      data: b.riwayat!.map((r) => [
+                        r.tanggal ?? '-',
+                        (r.berat ?? 0.0).toStringAsFixed(1),
+                        (r.tinggi ?? 0.0).toStringAsFixed(1),
+                        r.lingkarKepala != null ? r.lingkarKepala!.toStringAsFixed(1) : '-',
+                        b.displayStatus,
+                      ]).toList(),
+                      headerStyle: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                        fontSize: 8,
+                      ),
+                      cellStyle: const pw.TextStyle(fontSize: 8),
+                      cellHeight: 15,
+                      border: pw.TableBorder.all(
+                        color: PdfColors.grey400,
+                        width: 0.5,
+                      ),
+                      headerDecoration: const pw.BoxDecoration(
+                        color: PdfColors.grey200,
+                      ),
+                    ),
+                  );
+                }
+                content.add(pw.SizedBox(height: 15));
               }
               return content;
             },
