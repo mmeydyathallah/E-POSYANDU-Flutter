@@ -513,7 +513,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.background(context),
       body: SizedBox.expand(
         child: Stack(
           children: [
@@ -598,7 +598,10 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   }
 
   Widget _buildWelcomeText() {
-    return const Padding(
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
+
+    return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -608,13 +611,13 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: textPrimary,
             ),
           ),
           SizedBox(height: 4),
           Text(
             'Pilih anak untuk melihat riwayat pertumbuhan',
-            style: TextStyle(fontSize: 14, color: Colors.black54),
+            style: TextStyle(fontSize: 14, color: textSecondary),
           ),
         ],
       ),
@@ -622,11 +625,16 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   }
 
   Widget _buildToddlerList() {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
     if (_listBalita.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
           padding: EdgeInsets.only(top: 100),
-          child: Text('Belum ada data balita.'),
+          child: Text(
+            'Belum ada data balita.',
+            style: TextStyle(color: textSecondary),
+          ),
         ),
       );
     }
@@ -641,11 +649,12 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
         final bool isGirl = (balita.jenisKelamin ?? '') == 'P';
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppTheme.surface(context),
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.border(context)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
+                color: AppTheme.shadow(context),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -677,11 +686,15 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
             ),
             title: Text(
               balita.nama ?? '-',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: textPrimary,
+              ),
             ),
             subtitle: Text(
               '${balita.usia ?? 0} Bulan · ${balita.jenisKelamin == 'L' ? 'Laki-laki' : 'Perempuan'}',
-              style: const TextStyle(fontSize: 13, color: Colors.black54),
+              style: TextStyle(fontSize: 13, color: textSecondary),
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -762,14 +775,16 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   Widget _buildIdentityCard() {
     if (_selected == null) return const SizedBox();
     final bool isGirl = _selected!.jenisKelamin == 'P';
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.surface(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade100),
+          border: Border.all(color: AppTheme.border(context)),
         ),
         child: Row(
           children: [
@@ -804,16 +819,16 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                 children: [
                   Text(
                     _selected!.nama ?? '-',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '${_selected!.usia ?? 0} Bulan · ${isGirl ? 'Perempuan' : 'Laki-laki'}',
-                    style: const TextStyle(fontSize: 13, color: Colors.black54),
+                    style: TextStyle(fontSize: 13, color: textSecondary),
                   ),
                 ],
               ),
@@ -877,13 +892,15 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
 
   Widget _buildStatCard(String title, String value, IconData icon,
       {bool fullWidth = false}) {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
     return Container(
       width: fullWidth ? double.infinity : null,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.surface(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: AppTheme.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -894,10 +911,10 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
               const SizedBox(width: 8),
               Text(
                 title.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black54,
+                  color: textSecondary,
                 ),
               ),
             ],
@@ -905,10 +922,10 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
           const SizedBox(height: 10),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: textPrimary,
             ),
           ),
         ],
@@ -921,14 +938,15 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
     final isGirl = _selected!.jenisKelamin == 'P';
     final hasLkData =
         riwayat?.any((r) => (r.lingkarKepala ?? 0) > 0) ?? false;
+    final textSecondary = AppTheme.textSecondary(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.surface(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade100),
+          border: Border.all(color: AppTheme.border(context)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -948,9 +966,9 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                     ),
                     Text(
                       '${(_selected!.nama ?? '').split(' ').first} · ${isGirl ? 'Perempuan' : 'Laki-laki'}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
-                        color: Colors.black54,
+                        color: textSecondary,
                       ),
                     ),
                   ],

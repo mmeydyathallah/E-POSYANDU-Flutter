@@ -152,15 +152,17 @@ class IsarService {
   /// Add a new Riwayat entry to an existing balita
   Future<void> addRiwayat(Balita balita, Riwayat riwayat) async {
     balita.riwayat = [...(balita.riwayat ?? []), riwayat];
-    // Update latest berat/tinggi as well
+    // Keep the latest summary fields in sync with the newest measurement.
     balita.berat = riwayat.berat;
     balita.tinggi = riwayat.tinggi;
+    balita.lingkarKepala = riwayat.lingkarKepala;
     await saveBalita(balita);
     await ActivityLogService().log(
       'Pemeriksaan',
       'Simpan pengukuran ${balita.nama ?? "-"} '
           '(BB ${riwayat.berat?.toStringAsFixed(1) ?? "0.0"} kg, '
-          'TB ${riwayat.tinggi?.toStringAsFixed(1) ?? "0.0"} cm).',
+          'TB ${riwayat.tinggi?.toStringAsFixed(1) ?? "0.0"} cm'
+          '${riwayat.lingkarKepala != null ? ', LK ${riwayat.lingkarKepala!.toStringAsFixed(1)} cm' : ''}).',
     );
   }
 
@@ -173,13 +175,15 @@ class IsarService {
     newList.removeAt(index);
     balita.riwayat = newList;
 
-    // Update latest stats if the removed record was the latest
+    // Update latest summary fields after removing a measurement.
     if (newList.isNotEmpty) {
       balita.berat = newList.last.berat;
       balita.tinggi = newList.last.tinggi;
+      balita.lingkarKepala = newList.last.lingkarKepala;
     } else {
       balita.berat = 0.0;
       balita.tinggi = 0.0;
+      balita.lingkarKepala = 0.0;
     }
 
     await saveBalita(balita);

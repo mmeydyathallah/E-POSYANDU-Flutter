@@ -38,8 +38,10 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textPrimary = AppTheme.textPrimary(context);
+
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.background(context),
       body: SizedBox.expand(
         child: Stack(
           children: [
@@ -47,7 +49,10 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
               child: Column(
                 children: [
                   AppBar(
-                    title: const Text('Data Balita'),
+                    title: Text(
+                      'Data Balita',
+                      style: TextStyle(color: textPrimary),
+                    ),
                     backgroundColor: Colors.transparent,
                     elevation: 0,
                     leading: IconButton(
@@ -55,19 +60,6 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                           Navigator.popUntil(context, ModalRoute.withName('/')),
                       icon: const Icon(Icons.arrow_back),
                     ),
-                    actions: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 16.0),
-                        child: Badge(
-                          isLabelVisible:
-                              false, // Can be connected to state later
-                          child: IconButton(
-                            onPressed: () {}, // Show notification list?
-                            icon: const Icon(Icons.notifications_outlined),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                   _buildSearchBar(),
                   _buildFilters(),
@@ -108,9 +100,6 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
         ),
         leading: const Icon(Icons.search, color: AppTheme.primary),
         elevation: const WidgetStatePropertyAll<double>(0),
-        backgroundColor: WidgetStatePropertyAll<Color>(
-          Colors.white.withValues(alpha: 0.8),
-        ),
         shape: WidgetStatePropertyAll<OutlinedBorder>(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
@@ -122,6 +111,8 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
   }
 
   Widget _buildFilters() {
+    final textPrimary = AppTheme.textPrimary(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
       child: SingleChildScrollView(
@@ -142,12 +133,12 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                     : FontWeight.normal,
                 color: _selectedFilter == 'Semua'
                     ? AppTheme.primary
-                    : Colors.black87,
+                    : textPrimary,
               ),
               side: BorderSide(
                 color: _selectedFilter == 'Semua'
                     ? Colors.transparent
-                    : Colors.grey.shade300,
+                    : AppTheme.border(context),
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -168,12 +159,12 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                     : FontWeight.normal,
                 color: _selectedFilter == 'Terbaru'
                     ? AppTheme.primary
-                    : Colors.black87,
+                    : textPrimary,
               ),
               side: BorderSide(
                 color: _selectedFilter == 'Terbaru'
                     ? Colors.transparent
-                    : Colors.grey.shade300,
+                    : AppTheme.border(context),
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -194,12 +185,12 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                     : FontWeight.normal,
                 color: _selectedFilter == 'Risiko Tinggi'
                     ? AppTheme.primary
-                    : Colors.black87,
+                    : textPrimary,
               ),
               side: BorderSide(
                 color: _selectedFilter == 'Risiko Tinggi'
                     ? Colors.transparent
-                    : Colors.grey.shade300,
+                    : AppTheme.border(context),
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -212,6 +203,8 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
   }
 
   Widget _buildToddlerList() {
+    final textSecondary = AppTheme.textSecondary(context);
+
     List<Balita> filteredList = _listBalita;
     if (_selectedFilter == 'Terbaru') {
       filteredList = List.from(_listBalita)
@@ -235,20 +228,20 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text(
+              Text(
                 'Registered Toddlers',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: AppTheme.textPrimary(context),
                 ),
               ),
               Text(
                 '${filteredList.length} Total',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black54,
+                  color: textSecondary,
                 ),
               ),
             ],
@@ -256,10 +249,10 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
           const SizedBox(height: 16),
           Expanded(
             child: filteredList.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       'Belum ada data balita. Silakan tambahkan!',
-                      style: TextStyle(color: Colors.black54),
+                      style: TextStyle(color: textSecondary),
                     ),
                   )
                 : ListView(
@@ -311,17 +304,20 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
     String? localPhotoPath,
     bool isWarning = false,
   }) {
+    final isDark = AppTheme.isDark(context);
+    final textSecondary = AppTheme.textSecondary(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.surface(context),
         borderRadius: BorderRadius.circular(20),
         border: isWarning
             ? Border(left: BorderSide(color: statusColor, width: 4))
-            : Border.all(color: Colors.black.withValues(alpha: 0.05)),
+            : Border.all(color: AppTheme.border(context)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: AppTheme.shadow(context),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -337,10 +333,15 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppTheme.primary.withValues(alpha: 0.12),
-                  border: Border.all(color: Colors.white, width: 2),
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.1)
+                        : Colors.white,
+                    width: 2,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
+                      color: AppTheme.shadow(context),
                       blurRadius: 4,
                     ),
                   ],
@@ -386,19 +387,19 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: Colors.black87,
+                    color: AppTheme.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   details,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black54,
+                    color: textSecondary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -426,7 +427,7 @@ class _ToddlerDataScreenState extends State<ToddlerDataScreen> {
           ),
           Icon(
             Icons.chevron_right,
-            color: isWarning ? Colors.black38 : AppTheme.primary,
+            color: isWarning ? AppTheme.textTertiary(context) : AppTheme.primary,
           ),
         ],
       ),

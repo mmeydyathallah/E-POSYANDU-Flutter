@@ -49,8 +49,11 @@ class _ActivityLogsScreenState extends State<ActivityLogsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
+
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.background(context),
       appBar: AppBar(
         title: const Text('Aktivitas Aplikasi'),
         actions: [
@@ -67,10 +70,10 @@ class _ActivityLogsScreenState extends State<ActivityLogsScreen> {
         builder: (context, snapshot) {
           final logs = snapshot.data ?? [];
           if (logs.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
                 'Belum ada aktivitas tercatat.',
-                style: TextStyle(color: Colors.black54),
+                style: TextStyle(color: textSecondary),
               ),
             );
           }
@@ -86,14 +89,15 @@ class _ActivityLogsScreenState extends State<ActivityLogsScreen> {
                 child: ListTile(
                   title: Text(
                     log.message,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
+                      color: textPrimary,
                     ),
                   ),
                   subtitle: Text(
                     '${log.category} - ${_fmt(log.timestamp)}',
-                    style: const TextStyle(fontSize: 11),
+                    style: TextStyle(fontSize: 11, color: textSecondary),
                   ),
                 ),
               );
@@ -104,4 +108,3 @@ class _ActivityLogsScreenState extends State<ActivityLogsScreen> {
     );
   }
 }
-

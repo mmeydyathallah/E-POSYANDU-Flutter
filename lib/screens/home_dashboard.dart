@@ -255,7 +255,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.background(context),
       body: SizedBox.expand(
         child: Stack(
           children: [
@@ -300,6 +300,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
     return StreamBuilder<AppConfig?>(
       stream: IsarService().watchConfig(),
       builder: (context, snapshot) {
+        final textPrimary = AppTheme.textPrimary(context);
         final config = snapshot.data;
         final String adminName = config?.adminName ?? 'Halo Admin';
         final String posyanduName =
@@ -351,10 +352,10 @@ class _HomeDashboardState extends State<HomeDashboard> {
                               adminName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                                color: textPrimary,
                               ),
                             ),
                             Text(
@@ -380,11 +381,11 @@ class _HomeDashboardState extends State<HomeDashboard> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppTheme.surface(context),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: AppTheme.shadow(context),
                           blurRadius: 10,
                         ),
                       ],
@@ -394,18 +395,18 @@ class _HomeDashboardState extends State<HomeDashboard> {
                         Navigator.pushNamed(context, '/settings');
                       },
                       icon: const Icon(Icons.settings_outlined),
-                      color: Colors.black87,
+                      color: textPrimary,
                       tooltip: 'Settings',
                     ),
                   ),
                   const SizedBox(width: 8),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppTheme.surface(context),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: AppTheme.shadow(context),
                           blurRadius: 10,
                         ),
                       ],
@@ -415,7 +416,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                         Navigator.pushNamed(context, '/activity_logs');
                       },
                       icon: const Icon(Icons.history_rounded),
-                      color: Colors.black87,
+                      color: textPrimary,
                       tooltip: 'Aktivitas',
                     ),
                   ),
@@ -427,11 +428,11 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     backgroundColor: Colors.red,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppTheme.surface(context),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
+                            color: AppTheme.shadow(context),
                             blurRadius: 10,
                           ),
                         ],
@@ -439,7 +440,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                       child: IconButton(
                         onPressed: _showNotificationList,
                         icon: const Icon(Icons.notifications_outlined),
-                        color: Colors.black87,
+                        color: textPrimary,
                       ),
                     ),
                   ),
@@ -454,6 +455,9 @@ class _HomeDashboardState extends State<HomeDashboard> {
 
   // --- (Existing methods kept below) ---
   Widget _buildHeroSection() {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -464,13 +468,13 @@ class _HomeDashboardState extends State<HomeDashboard> {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w900,
-              color: Colors.black.withValues(alpha: 0.8),
+              color: textPrimary,
               letterSpacing: -1,
             ),
           ),
-          const Text(
+          Text(
             'Monitoring kesehatan balita hari ini',
-            style: TextStyle(fontSize: 14, color: Colors.black54),
+            style: TextStyle(fontSize: 14, color: textSecondary),
           ),
         ],
       ),
@@ -478,6 +482,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
   }
 
   Widget _buildSensorIoTSection() {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
     final Color accentColor = _isConnected
         ? AppTheme.primary
         : Colors.grey.shade400;
@@ -486,8 +492,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
       child: Container(
         decoration: BoxDecoration(
           color: _isConnected
-              ? Colors.white
-              : Colors.white.withValues(alpha: 0.6),
+              ? AppTheme.surface(context)
+              : AppTheme.surfaceMuted(context),
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
             color: accentColor.withValues(alpha: 0.1),
@@ -495,7 +501,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: AppTheme.shadow(context),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -538,16 +544,16 @@ class _HomeDashboardState extends State<HomeDashboard> {
                             fontWeight: FontWeight.bold,
                             color: _isConnected
                                 ? AppTheme.primary
-                                : Colors.black87,
+                                : textPrimary,
                           ),
                         ),
                         Text(
                           _isScanning
                               ? 'Mendekatlah ke timbangan'
                               : _connectionStatus,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.black45,
+                            color: textSecondary,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -594,7 +600,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
             if (_isConnected) ...[
               Divider(
                 height: 1,
-                color: Colors.grey.shade100,
+                color: AppTheme.border(context),
                 indent: 20,
                 endIndent: 20,
               ),
@@ -631,11 +637,16 @@ class _HomeDashboardState extends State<HomeDashboard> {
     String unit,
     IconData icon,
   ) {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
+
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.backgroundLight.withValues(alpha: 0.5),
+          color: AppTheme.isDark(context)
+              ? AppTheme.surfaceStrong(context).withValues(alpha: 0.4)
+              : AppTheme.backgroundLight.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -645,10 +656,10 @@ class _HomeDashboardState extends State<HomeDashboard> {
             const SizedBox(height: 12),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
-                color: Colors.black45,
+                color: textSecondary,
               ),
             ),
             Row(
@@ -657,16 +668,19 @@ class _HomeDashboardState extends State<HomeDashboard> {
               children: [
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: textPrimary,
                   ),
                 ),
                 const SizedBox(width: 2),
                 Text(
                   unit,
-                  style: const TextStyle(fontSize: 10, color: Colors.black38),
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: AppTheme.textTertiary(context),
+                  ),
                 ),
               ],
             ),
@@ -677,6 +691,9 @@ class _HomeDashboardState extends State<HomeDashboard> {
   }
 
   Widget _buildRecentCheckupsSection() {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -685,12 +702,12 @@ class _HomeDashboardState extends State<HomeDashboard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Checkup Terbaru',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: textPrimary,
                 ),
               ),
               TextButton(
@@ -707,12 +724,12 @@ class _HomeDashboardState extends State<HomeDashboard> {
           ),
           const SizedBox(height: 8),
           if (_listBalita.isEmpty)
-            const Center(
+            Center(
               child: Padding(
                 padding: EdgeInsets.all(32),
                 child: Text(
                   'Belum ada data pemeriksaan',
-                  style: TextStyle(color: Colors.black38),
+                  style: TextStyle(color: textSecondary),
                 ),
               ),
             )
@@ -724,6 +741,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
   }
 
   Widget _buildCheckupCard(Balita b) {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
     String statusLabel = b.displayStatus;
 
     Color statusColor = AppTheme.primary;
@@ -736,11 +755,12 @@ class _HomeDashboardState extends State<HomeDashboard> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.surface(context),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.border(context)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: AppTheme.shadow(context),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -772,15 +792,15 @@ class _HomeDashboardState extends State<HomeDashboard> {
               children: [
                 Text(
                   b.nama ?? '',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
-                    color: Colors.black87,
+                    color: textPrimary,
                   ),
                 ),
                 Text(
                   '${b.usia} Bulan · ${b.berat}kg · ${b.tinggi}cm',
-                  style: const TextStyle(fontSize: 11, color: Colors.black45),
+                  style: TextStyle(fontSize: 11, color: textSecondary),
                 ),
               ],
             ),

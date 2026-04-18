@@ -199,7 +199,7 @@ class _InputDataScreenState extends State<InputDataScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.background(context),
       resizeToAvoidBottomInset: false,
       body: SizedBox.expand(
         child: Stack(
@@ -252,6 +252,9 @@ class _InputDataScreenState extends State<InputDataScreen> {
   }
 
   Widget _buildHeader() {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
       child: Row(
@@ -273,18 +276,18 @@ class _InputDataScreenState extends State<InputDataScreen> {
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
                     'E-POSYANDU',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: textPrimary,
                     ),
                   ),
                   Text(
                     'Digital Health Monitoring',
-                    style: TextStyle(fontSize: 12, color: Colors.black54),
+                    style: TextStyle(fontSize: 12, color: textSecondary),
                   ),
                 ],
               ),
@@ -296,7 +299,7 @@ class _InputDataScreenState extends State<InputDataScreen> {
             child: IconButton(
               onPressed: () {},
               icon: const Icon(Icons.notifications),
-              color: Colors.black54,
+              color: textSecondary,
             ),
           ),
         ],
@@ -305,6 +308,9 @@ class _InputDataScreenState extends State<InputDataScreen> {
   }
 
   Widget _buildLiveSensorData() {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
@@ -313,12 +319,12 @@ class _InputDataScreenState extends State<InputDataScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'LIVE SENSOR DATA',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black54,
+                  color: textSecondary,
                   letterSpacing: 1.2,
                 ),
               ),
@@ -357,12 +363,12 @@ class _InputDataScreenState extends State<InputDataScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.4),
+              color: AppTheme.surfaceMuted(context),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.6)),
+              border: Border.all(color: AppTheme.border(context)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: AppTheme.shadow(context),
                   blurRadius: 10,
                 ),
               ],
@@ -424,12 +430,12 @@ class _InputDataScreenState extends State<InputDataScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.4),
+              color: AppTheme.surfaceMuted(context),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.6)),
+              border: Border.all(color: AppTheme.border(context)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: AppTheme.shadow(context),
                   blurRadius: 10,
                 ),
               ],
@@ -442,12 +448,12 @@ class _InputDataScreenState extends State<InputDataScreen> {
                   size: 20,
                 ),
                 const SizedBox(width: 10),
-                const Text(
+                Text(
                   'LINGKAR KEPALA',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black54,
+                    color: textSecondary,
                     letterSpacing: 1.2,
                   ),
                 ),
@@ -460,23 +466,23 @@ class _InputDataScreenState extends State<InputDataScreen> {
                       decimal: true,
                     ),
                     textAlign: TextAlign.right,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w900,
-                      color: Colors.black87,
+                      color: textPrimary,
                     ),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: '0,0',
                       hintStyle: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w900,
-                        color: Colors.black26,
+                        color: AppTheme.textTertiary(context),
                       ),
                       suffixText: ' cm',
                       suffixStyle: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black45,
+                        color: textSecondary,
                       ),
                       border: InputBorder.none,
                       isDense: true,
@@ -506,6 +512,9 @@ class _InputDataScreenState extends State<InputDataScreen> {
     String unit,
     IconData icon,
   ) {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -515,10 +524,10 @@ class _InputDataScreenState extends State<InputDataScreen> {
             const SizedBox(width: 4),
             Text(
               title.toUpperCase(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
-                color: Colors.black54,
+                color: textSecondary,
               ),
             ),
           ],
@@ -546,19 +555,19 @@ class _InputDataScreenState extends State<InputDataScreen> {
           children: [
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.w900,
-                color: Colors.black87,
+                color: textPrimary,
               ),
             ),
             const SizedBox(width: 4),
             Text(
               unit,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: Colors.black45,
+                color: textSecondary,
               ),
             ),
           ],
@@ -833,6 +842,9 @@ class _InputDataScreenState extends State<InputDataScreen> {
   }
 
   Widget _buildToddlerSelector() {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
+
     final filteredList = _listBalita
         .where(
           (balita) => (balita.nama ?? '').toLowerCase().contains(
@@ -843,14 +855,14 @@ class _InputDataScreenState extends State<InputDataScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
             'REGISTERED TODDLERS',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: Colors.black54,
+              color: textSecondary,
               letterSpacing: 1.2,
             ),
           ),
@@ -861,13 +873,14 @@ class _InputDataScreenState extends State<InputDataScreen> {
           child: SearchBar(
             controller: _searchController,
             hintText: 'Cari nama balita...',
-            leading: const Icon(Icons.search, color: Colors.black38, size: 20),
-            backgroundColor: WidgetStateProperty.all(
-              Colors.white.withValues(alpha: 0.6),
+            leading: Icon(
+              Icons.search,
+              color: AppTheme.textTertiary(context),
+              size: 20,
             ),
             elevation: WidgetStateProperty.all(0),
             side: WidgetStateProperty.all(
-              BorderSide(color: AppTheme.primary.withValues(alpha: 0.1)),
+              BorderSide(color: AppTheme.border(context)),
             ),
             onChanged: (value) => setState(() => _searchQuery = value),
             trailing: [
@@ -875,7 +888,7 @@ class _InputDataScreenState extends State<InputDataScreen> {
                 IconButton(
                   icon: const Icon(
                     Icons.clear,
-                    color: Colors.black38,
+                    color: AppTheme.primary,
                     size: 16,
                   ),
                   onPressed: () {
@@ -919,12 +932,12 @@ class _InputDataScreenState extends State<InputDataScreen> {
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppTheme.primary.withValues(alpha: 0.05)
-                        : Colors.white.withValues(alpha: 0.6),
+                        : AppTheme.surfaceMuted(context),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isSelected
                           ? AppTheme.primary
-                          : Colors.white.withValues(alpha: 0.3),
+                          : AppTheme.border(context),
                       width: isSelected ? 2 : 1,
                     ),
                   ),
@@ -937,11 +950,16 @@ class _InputDataScreenState extends State<InputDataScreen> {
                             height: 64,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.grey[200],
-                              border: Border.all(color: Colors.white, width: 2),
+                              color: AppTheme.surface(context),
+                              border: Border.all(
+                                color: AppTheme.isDark(context)
+                                    ? Colors.white.withValues(alpha: 0.1)
+                                    : Colors.white,
+                                width: 2,
+                              ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.05),
+                                  color: AppTheme.shadow(context),
                                   blurRadius: 4,
                                 ),
                               ],
@@ -996,19 +1014,19 @@ class _InputDataScreenState extends State<InputDataScreen> {
                           children: [
                             Text(
                               balita.nama ?? 'Nama Anak',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: Colors.black87,
+                                color: textPrimary,
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               '${balita.usia ?? 0} Bulan • ID: ${(balita.tanggalDaftar ?? '').isNotEmpty ? (balita.tanggalDaftar ?? '').substring(0, 4) : "0000"}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
-                                color: Colors.black54,
+                                color: textSecondary,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -1036,7 +1054,9 @@ class _InputDataScreenState extends State<InputDataScreen> {
                       ),
                       Icon(
                         isSelected ? Icons.check_circle : Icons.chevron_right,
-                        color: isSelected ? AppTheme.primary : Colors.black38,
+                        color: isSelected
+                            ? AppTheme.primary
+                            : AppTheme.textTertiary(context),
                       ),
                     ],
                   ),

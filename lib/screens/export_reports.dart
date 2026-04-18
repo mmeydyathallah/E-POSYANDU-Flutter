@@ -735,7 +735,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
+      backgroundColor: AppTheme.background(context),
       body: SizedBox.expand(
         child: Stack(
           children: [
@@ -786,6 +786,8 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
   }
 
   Widget _buildHeader() {
+    final textPrimary = AppTheme.textPrimary(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
       child: Row(
@@ -796,15 +798,15 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
               IconButton(
                 onPressed: () => Navigator.maybePop(context),
                 icon: const Icon(Icons.arrow_back),
-                color: Colors.black87,
+                color: textPrimary,
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Export & Reports',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: textPrimary,
                 ),
               ),
             ],
@@ -858,18 +860,24 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
   }
 
   Widget _buildReportTypeSelection() {
+    final textPrimary = AppTheme.textPrimary(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Tipe Laporan',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: textPrimary,
+            ),
           ),
           Card.outlined(
             margin: EdgeInsets.zero,
-            color: Colors.white,
+            color: AppTheme.surface(context),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -897,15 +905,25 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
   }
 
   Widget _buildTypeOption(int value, String title, String sub, IconData icon) {
+    final textPrimary = AppTheme.textPrimary(context);
+    final textSecondary = AppTheme.textSecondary(context);
+
     return RadioListTile<int>(
       value: value,
       groupValue: _reportType,
       onChanged: (val) => setState(() => _reportType = val!),
       title: Text(
         title,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          color: textPrimary,
+        ),
       ),
-      subtitle: Text(sub, style: const TextStyle(fontSize: 11)),
+      subtitle: Text(
+        sub,
+        style: TextStyle(fontSize: 11, color: textSecondary),
+      ),
       secondary: Icon(
         icon,
         color: _reportType == value ? AppTheme.primary : Colors.grey,
@@ -916,14 +934,20 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
   }
 
   Widget _buildExportActions() {
+    final textPrimary = AppTheme.textPrimary(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Unduh Laporan',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: textPrimary,
+            ),
           ),
           FilledButton.icon(
             onPressed: _isExporting ? null : _exportToPDF,
@@ -945,7 +969,7 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
             icon: const Icon(Icons.table_view, color: AppTheme.primary),
             label: const Text('Ekspor ke Excel (.xlsx)'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.black87,
+              foregroundColor: textPrimary,
               side: BorderSide(color: AppTheme.primary.withValues(alpha: 0.2)),
               minimumSize: const Size(double.infinity, 56),
               shape: RoundedRectangleBorder(
@@ -959,23 +983,26 @@ class _ExportReportsScreenState extends State<ExportReportsScreen> {
   }
 
   Widget _buildQuickTips() {
+    final textSecondary = AppTheme.textSecondary(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.primary.withValues(alpha: 0.05),
+          color: AppTheme.surfaceMuted(context),
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.border(context)),
         ),
-        child: const Row(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.info_outline, color: AppTheme.primary, size: 20),
-            SizedBox(width: 12),
+            const Icon(Icons.info_outline, color: AppTheme.primary, size: 20),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 'File Excel (.xlsx) yang dihasilkan memiliki warna & format tabel yang identik dengan PDF. Buka dengan Microsoft Excel atau Google Sheets.',
-                style: TextStyle(fontSize: 12, color: Colors.black54),
+                style: TextStyle(fontSize: 12, color: textSecondary),
               ),
             ),
           ],
